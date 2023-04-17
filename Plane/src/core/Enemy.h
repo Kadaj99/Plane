@@ -7,13 +7,15 @@
 #include "config.h"
 
 
-enum class State {
-    Active,
-    Inactive
-};
 
 class Enemy {
 public:
+
+     enum class EnemyState {
+        Active,
+        Inactive
+    };
+
     Enemy(int x, int y, int interval, int speed);
     ~Enemy();
 
@@ -21,8 +23,8 @@ public:
     int getY() const;
     void setX(int x);
     void setY(int y);
-    State getState() const;
-    void setState(State newState);
+    EnemyState getState() const;
+    void setState(EnemyState newState);
     int getInterval() const;
     int getSpeed() const;
 
@@ -35,7 +37,7 @@ private:
     int y;
     int interval;
     int speed;
-    State state;
+    EnemyState state;
 };
 
 #endif

@@ -6,16 +6,17 @@
 class Bullet {
 public:
 
-    enum class State {
+     enum class BulletState {
         Active,
         Inactive
     };
+
     Bullet(int x, int y, int speed);
 
     void setX(int x);
     void setY(int y);
-    State getState() const;
-    void setState(State newState);
+    BulletState getState() const;
+    void setState(BulletState newState);
     int getX() const;
     int getY() const;
     int getSpeed() const;
@@ -28,7 +29,7 @@ private:
     int x;
     int y;
     int speed;
-    State state;
+    BulletState state;
 };
 
 #endif // BULLET_H

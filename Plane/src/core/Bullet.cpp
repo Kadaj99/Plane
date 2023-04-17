@@ -1,11 +1,11 @@
 #include "Bullet.h"
 
 Bullet::Bullet(int x, int y, int speed)
-    : x(x), y(y), speed(speed), state(State::Inactive) {
+    : x(x), y(y), speed(speed), state(BulletState::Inactive) {
 }
 
 void Bullet::update() {
-    if (state == State::Active) {
+    if (state == BulletState::Active) {
         y -= speed;
     }
 }
@@ -18,11 +18,11 @@ void Bullet::setY(int y) {
     this->y = y;
 }
 
-Bullet::State Bullet::getState() const {
+Bullet::BulletState Bullet::getState() const {
     return state;
 }
 
-void Bullet::setState(State newState) {
+void Bullet::setState(BulletState newState) {
     state = newState;
 }
 
@@ -42,7 +42,7 @@ SDL_Rect Bullet::getCollisionRect() const {
     SDL_Rect rect;
     rect.x = x;
     rect.y = y;
-    rect.w = 5; // 根据子弹图像的实际大小进行调整
-    rect.h = 10; // 根据子弹图像的实际大小进行调整
+    rect.w = 10; // 根据子弹图像的实际大小进行调整
+    rect.h = 20; // 根据子弹图像的实际大小进行调整
     return rect;
 }

@@ -1,8 +1,10 @@
 #include "Enemy.h"
 
 Enemy::Enemy(int x, int y, int interval, int speed)
-: x(x), y(y), interval(interval), speed(speed), state(State::Active)
+: x(x), y(y), interval(interval), speed(speed), state(EnemyState::Active)
 {}
+
+
 
 Enemy::~Enemy()
 {}
@@ -23,11 +25,11 @@ void Enemy::setY(int y) {
     y = y;
 }
 
-State Enemy::getState() const {
+Enemy::EnemyState Enemy::getState() const {
     return state;
 }
 
-void Enemy::setState(State newState) {
+void Enemy::setState(EnemyState newState) {
     state = newState;
 }
 
@@ -39,8 +41,27 @@ int Enemy::getSpeed() const {
     return speed;
 }
 
+// 修改Enemy类的update()函数
 void Enemy::update() {
+    if (state == EnemyState::Inactive) {
+        // 如果敌机处于非活动状态，根据一定条件激活敌机
+        state = EnemyState::Active;
+
+        // 生成随机高度，范围为100到200像素
+        int randomHeight = 100 + rand() % 101;
+        y = -randomHeight;
+    } else {
+        // 更新敌机位置
+        y += speed;
+
+        // 如果敌机下落到地图边界外，将状态设置为"Inactive"
+        if (y > GAME_HEIGHT) {
+            state = EnemyState::Inactive;
+        }
+    }
 }
+
+
 
 SDL_Rect Enemy::getCollisionRect() const {
     SDL_Rect rect;
