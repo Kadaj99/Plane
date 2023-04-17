@@ -1,0 +1,40 @@
+# depslib dependency file v1.0
+1681667863 source:/home/kadaj/Doc/Plane/src/core/scene.cpp
+
+1681673090 source:/home/kadaj/Doc/Plane/src/sdl2/main.cpp
+	"mainSDL.h"
+
+1681684620 source:/home/kadaj/Doc/Plane/src/core/Player.cpp
+	"Player.h"
+	"config.h"
+
+1681684650 /home/kadaj/Doc/Plane/src/core/Player.h
+	"SDL2/SDL.h"
+
+1681678331 /home/kadaj/Doc/Plane/src/core/config.h
+
+1681688553 source:/home/kadaj/Doc/Plane/src/sdl2/mainSDL.cpp
+	"mainSDL.h"
+	<iostream>
+
+1681686140 /home/kadaj/Doc/Plane/src/sdl2/mainSDL.h
+	<SDL2/SDL.h>
+	"../core/Map.h"
+	"../core/Player.h"
+	"../core/Bullet.h"
+	<SDL2/SDL_image.h>
+	<vector>
+
+1681682883 source:/home/kadaj/Doc/Plane/src/core/Map.cpp
+	"Map.h"
+	"config.h"
+
+1681683043 /home/kadaj/Doc/Plane/src/core/Map.h
+	<string>
+
+1681686632 source:/home/kadaj/Doc/Plane/src/core/Bullet.cpp
+	"Bullet.h"
+
+1681688116 /home/kadaj/Doc/Plane/src/core/Bullet.h
+	"SDL2/SDL.h"
+
