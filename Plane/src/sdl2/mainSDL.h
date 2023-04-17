@@ -96,6 +96,8 @@ private:
     SDL_Texture *startGameTextureUnselected;
     SDL_Texture *optionsTextureSelected;
     SDL_Texture *optionsTextureUnselected;
+    SDL_Texture *controlsTextureSelected;
+    SDL_Texture *controlsTextureUnselected;
 
     SDL_Texture *keyboardTextureSelected;
     SDL_Texture *keyboardTextureUnselected;

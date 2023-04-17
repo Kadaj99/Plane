@@ -71,6 +71,16 @@ bool Game::initSDL() {
     optionsTextureSelected = IMG_LoadTexture(renderer,"data/option2.png");
     optionsTextureUnselected = IMG_LoadTexture(renderer,"data/option1.png");
 
+    controlsTextureSelected = IMG_LoadTexture(renderer, "data/c2.png");
+    if (controlsTextureSelected == nullptr) {
+        std::cerr << "Failed to load texture: " << IMG_GetError() << std::endl;
+    }
+
+    controlsTextureUnselected = IMG_LoadTexture(renderer, "data/c1.png");
+    if (controlsTextureUnselected == nullptr) {
+        std::cerr << "Failed to load texture: " << IMG_GetError() << std::endl;
+    }
+
     // 加载背景图片
     SDL_Surface *bg_surface = IMG_Load("data/img_bg_level_1.jpg");
     if (!bg_surface) {
@@ -201,6 +211,12 @@ void Game::cleanUpSDL() {
     SDL_DestroyTexture(keyboardTextureUnselected);
     SDL_DestroyTexture(mouseTextureSelected);
     SDL_DestroyTexture(mouseTextureUnselected);
+    if (controlsTextureSelected != nullptr) {
+    SDL_DestroyTexture(controlsTextureSelected);
+    }
+    if (controlsTextureUnselected != nullptr) {
+        SDL_DestroyTexture(controlsTextureUnselected);
+    }
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -391,15 +407,36 @@ void Game::renderOptionsMenu() {
     SDL_RenderClear(renderer);
 
     if (currentState == GameState::OptionsMenu) {
-        renderOptionsMenu();
+        // 渲染 "Controls" 菜单项
+        if (menuSelection == 0) {
+            renderTexture(controlsTextureSelected, renderer, (windowWidth - 120) / 2, windowHeight / 2 - 52 / 2);
+        } else {
+            renderTexture(controlsTextureUnselected, renderer, (windowWidth - 120) / 2, windowHeight / 2 - 52 / 2);
+        }
+
+        // 添加其他选项菜单项的渲染代码（如果有的话）
+
     } else if (currentState == GameState::ControlMenu) {
         renderControlMenu();
     }
+
+    SDL_RenderPresent(renderer);
 }
 
 
 
+
+
 void Game::renderControlMenu() {
+    if (renderer == nullptr) {
+        // 渲染器创建失败，输出错误信息
+        std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
+        return;
+    }
+
+    // Clear the screen
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
     // 渲染 "Keyboard" 选项
     if (optionsMenuSelection == 0) {
         renderTexture(keyboardTextureSelected, renderer, 100, 100);
@@ -485,6 +522,7 @@ void Game::handleOptionsMenuEvents(SDL_Event &event) {
     }
 }
 
+
 void Game::handleControlMenuEvents(SDL_Event &event) {
     if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.sym) {
@@ -551,6 +589,8 @@ void Game::update() {
         bomb.update(currentTime);
     }
 }
+
+
 void Game::render() {
     // 清除屏幕
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -561,6 +601,8 @@ void Game::render() {
             renderMainMenu();
             break;
         case GameState::OptionsMenu:
+
+        case GameState::ControlMenu:
             renderOptionsMenu();
             break;
         case GameState::Running:
