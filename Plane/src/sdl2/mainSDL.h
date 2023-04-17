@@ -33,6 +33,7 @@ private:
     int windowHeight;
     std::string title;
     bool isRunning;
+    void renderGame();
 
     void checkCollisions(); // 添加碰撞检测函数声明
     // 添加地图对象和滚动速度
@@ -64,30 +65,43 @@ private:
 
     //Menu
     enum class GameState {
-        MainMenu,
-        OptionsMenu,
-        Running
+         MainMenu,
+         ControlMenu,
+         OptionsMenu,
+         Running,
+         Paused
     };
 
     GameState currentState;
     int menuSelection;
+    int optionsMenuSelection;
 
     // 用户选项
-    bool useKeyboardControl;
     bool autoFire;
+    bool useKeyboardControl; // 定义 useKeyboardControl 变量
 
     // ...
 
     void renderMainMenu();
     void renderOptionsMenu();
+    void renderControlMenu();
     void handleMainMenuEvents(SDL_Event &event);
     void handleOptionsMenuEvents(SDL_Event &event);
+    void handleRunningEvents(SDL_Event &event);
+    void handleControlMenuEvents(SDL_Event &event);
+
 
     SDL_Texture *titleTexture;
     SDL_Texture *startGameTextureSelected;
     SDL_Texture *startGameTextureUnselected;
     SDL_Texture *optionsTextureSelected;
     SDL_Texture *optionsTextureUnselected;
+
+    SDL_Texture *keyboardTextureSelected;
+    SDL_Texture *keyboardTextureUnselected;
+    SDL_Texture *mouseTextureSelected;
+    SDL_Texture *mouseTextureUnselected;
+    int controlSelection;
 };
 
 
