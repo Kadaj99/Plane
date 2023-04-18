@@ -38,6 +38,10 @@ int Bullet::getSpeed() const {
     return speed;
 }
 
+void Bullet::setSpeed(int speed) {
+    this->speed = speed;
+}
+
 SDL_Rect Bullet::getCollisionRect() const {
     SDL_Rect rect;
     rect.x = x;

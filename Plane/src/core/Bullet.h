@@ -20,6 +20,7 @@ public:
     int getX() const;
     int getY() const;
     int getSpeed() const;
+    void setSpeed(int speed);
 
     void update();
 

@@ -20,6 +20,7 @@ Game::Game(const std::string& title, int width, int height)
     useKeyboardControl = false;
     autoFire = false;
     controlSelection = 0;
+    controlMenuSelection=0;
 }
 
 
@@ -57,6 +58,12 @@ bool Game::initSDL() {
     if (!renderer) {
         std::cerr << "Renderer creation error: " << SDL_GetError() << std::endl;
         return false;
+    }
+
+    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, windowWidth, windowHeight);
+    if (texture == nullptr) {
+        std::cerr << "Failed to create texture: " << SDL_GetError() << std::endl;
+        isRunning = false;
     }
 
     // 初始化 SDL_image
@@ -134,10 +141,17 @@ bool Game::initSDL() {
     }
 
     controlSelection = 0;
+
     keyboardTextureSelected = IMG_LoadTexture(renderer, "data/k2.png");
     keyboardTextureUnselected = IMG_LoadTexture(renderer, "data/k1.png");
     mouseTextureSelected = IMG_LoadTexture(renderer, "data/m2.png");
     mouseTextureUnselected = IMG_LoadTexture(renderer, "data/m1.png");
+    //font.ttf
+    pauseFont = TTF_OpenFont("data/font1.ttf", 48);
+    if (!pauseFont) {
+        std::cerr << "Failed to load font: " << TTF_GetError() << std::endl;
+    }
+
 
     return true;
 }
@@ -217,6 +231,11 @@ void Game::cleanUpSDL() {
     if (controlsTextureUnselected != nullptr) {
         SDL_DestroyTexture(controlsTextureUnselected);
     }
+    if (texture != nullptr) {
+        SDL_DestroyTexture(texture);
+    }
+
+    TTF_CloseFont(pauseFont);
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -236,6 +255,22 @@ void Game::run() {
             case GameState::OptionsMenu:
                 renderOptionsMenu();
                 break;
+
+            case GameState::ControlMenu:
+                renderControlMenu();
+                break;
+
+            case GameState::MouseControl:
+                renderMouseControlMenu();
+                break;
+
+            case GameState::KeyboardControl:
+                renderKeyboardControlMenu();
+                break;
+
+            case GameState::Paused:
+                renderPausedScreen();
+                break;;
 
             case GameState::Running:
                 update();
@@ -270,6 +305,14 @@ void Game::handleEvents() {
                 handleRunningEvents(event);
                 break;
 
+            case GameState::ControlMenu:
+                handleControlMenuEvents(event);
+                break;
+
+            case GameState::Paused:
+                handlePausedEvents(event);
+                break;
+
             default:
                 break;
         }
@@ -294,6 +337,14 @@ void Game::handleRunningEvents(SDL_Event &event) {
 
             case SDLK_RIGHT:
                 player.moveRight(10);
+                break;
+
+            case SDLK_g:
+                autoFire = !autoFire; // Toggle auto-fire state
+                break;
+
+            case SDLK_p:
+                currentState = GameState::Paused;
                 break;
 
             case SDLK_SPACE:
@@ -335,6 +386,47 @@ void Game::handleRunningEvents(SDL_Event &event) {
 }
 
 
+void Game::renderPausedScreen() {
+    // 使用先前渲染的画面作为背景
+    SDL_SetRenderTarget(renderer, nullptr);
+    SDL_RenderCopy(renderer, texture, nullptr, nullptr);
+
+    // 渲染半透明灰色覆盖层
+    SDL_SetRenderDrawColor(renderer, 128, 128, 128, 128);
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_Rect rect = {0, 0, windowWidth, windowHeight};
+    SDL_RenderFillRect(renderer, &rect);
+
+    // 渲染 "PAUSE" 文字
+    SDL_Color textColor = {255, 255, 255, 255};
+    SDL_Surface *textSurface = TTF_RenderText_Blended(pauseFont, "PAUSE", textColor);
+    if (textSurface == nullptr) {
+        std::cerr << "Failed to render text: " << TTF_GetError() << std::endl;
+        return;
+    }
+
+    SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    if (textTexture == nullptr) {
+        std::cerr << "Failed to create texture from surface: " << SDL_GetError() << std::endl;
+        SDL_FreeSurface(textSurface);
+        return;
+    }
+
+    SDL_Rect textRect;
+    textRect.x = (windowWidth - textSurface->w) / 2;
+    textRect.y = (windowHeight - textSurface->h) / 2;
+    textRect.w = textSurface->w;
+    textRect.h = textSurface->h;
+
+    SDL_RenderCopy(renderer, textTexture, nullptr, &textRect);
+
+    // 销毁临时创建的资源
+    SDL_DestroyTexture(textTexture);
+    SDL_FreeSurface(textSurface);
+
+    // 更新屏幕
+    SDL_RenderPresent(renderer);
+}
 
 
 void Game::renderTexture(SDL_Texture* texture, SDL_Renderer* renderer, int x, int y) {
@@ -438,21 +530,29 @@ void Game::renderControlMenu() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
     // 渲染 "Keyboard" 选项
-    if (optionsMenuSelection == 0) {
+    if (controlSelection == 0) {
         renderTexture(keyboardTextureSelected, renderer, 100, 100);
     } else {
         renderTexture(keyboardTextureUnselected, renderer, 100, 100);
     }
 
     // 渲染 "Mouse" 选项
-    if (optionsMenuSelection == 1) {
+    if (controlSelection == 1) {
         renderTexture(mouseTextureSelected, renderer, 100, 200);
     } else {
         renderTexture(mouseTextureUnselected, renderer, 100, 200);
     }
+
+    // 更新屏幕
+    SDL_RenderPresent(renderer);
 }
 
 
+void Game::handlePausedEvents(SDL_Event &event) {
+    if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_p) {
+        currentState = GameState::Running;
+    }
+}
 
 void Game::handleMainMenuEvents(SDL_Event& event) {
     if (event.type == SDL_KEYDOWN) {
@@ -534,14 +634,14 @@ void Game::handleControlMenuEvents(SDL_Event &event) {
                 break;
             case SDLK_RETURN:
                 if (controlSelection == 0) {
-                    useKeyboardControl = true;
-                } else if (controlSelection == 1) {
                     useKeyboardControl = false;
+                } else if (controlSelection == 1) {
+                    useKeyboardControl = true;
                 }
-                currentState = GameState::OptionsMenu;
+                currentState = GameState::MainMenu;
                 break;
             case SDLK_ESCAPE:
-                currentState = GameState::OptionsMenu;
+                currentState = GameState::MainMenu;
                 break;
             default:
                 break;
@@ -550,7 +650,96 @@ void Game::handleControlMenuEvents(SDL_Event &event) {
 }
 
 
+void Game::handleKeyboardControlMenuEvents(SDL_Event& event) {
+    if (event.type == SDL_KEYDOWN) {
+        switch (event.key.keysym.sym) {
+            case SDLK_RETURN:
+                // 确认选择
+                currentControlType = ControlType::Keyboard;
+                break;
+            case SDLK_ESCAPE:
+                // 返回上一级菜单
+                currentState = GameState::ControlMenu;
+                break;
+        }
+    }
+}
 
+void Game::handleMouseControlMenuEvents(SDL_Event& event) {
+    if (event.type == SDL_KEYDOWN) {
+        switch (event.key.keysym.sym) {
+            case SDLK_RETURN:
+                // 确认选择
+                currentControlType = ControlType::Mouse;
+                break;
+            case SDLK_ESCAPE:
+                // 返回上一级菜单
+                currentState = GameState::ControlMenu;
+                break;
+        }
+    }
+}
+
+void Game::renderKeyboardControlMenu() {
+    if (renderer == nullptr) {
+        // 渲染器创建失败，输出错误信息
+        std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
+        return;
+    }
+
+    // Clear the screen
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+
+    // 在这里渲染键盘控制子菜单的内容
+
+    // Present the rendered screen
+    SDL_RenderPresent(renderer);
+}
+
+void Game::renderMouseControlMenu() {
+    if (renderer == nullptr) {
+        // 渲染器创建失败，输出错误信息
+        std::cerr << "Failed to create renderer: " << SDL_GetError() << std::endl;
+        return;
+    }
+
+    // Clear the screen
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+    // 在这里渲染鼠标控制子菜单的内容
+
+    // Present the rendered screen
+    SDL_RenderPresent(renderer);
+}
+
+
+void Game::fireBullet() {
+    // 查找一个未激活的子弹
+    Bullet *inactiveBullet = nullptr;
+    for (Bullet &bullet : bullets) {
+        if (bullet.getState() == Bullet::BulletState::Inactive) {
+            inactiveBullet = &bullet;
+            break;
+        }
+    }
+
+    // 如果找到未激活的子弹，将其设置为激活状态，并设置其初始位置和速度
+    if (inactiveBullet != nullptr) {
+        // 假设您的飞机对象具有 getX() 和 getY() 方法，返回飞机的位置
+        // 您需要根据实际情况进行调整
+        int initialBulletX = player.getX() + (50 / 2);
+        int initialBulletY = player.getY();
+
+        // 假设子弹速度为 5，根据实际情况调整
+        int bulletSpeed = 5;
+
+        inactiveBullet->setState(Bullet::BulletState::Active);
+        inactiveBullet->setX(initialBulletX);
+        inactiveBullet->setY(initialBulletY);
+        inactiveBullet->setSpeed(bulletSpeed);
+    }
+}
 
 void Game::update() {
 
@@ -565,6 +754,13 @@ void Game::update() {
             if (bullet.getY() < 0) {
             bullet.setState(Bullet::BulletState::Inactive);
             }
+        }
+    }
+     if (autoFire) {
+        // Add your auto-fire logic here, for example:
+        if (SDL_GetTicks() - lastFireTime > fireInterval) {
+            fireBullet();
+            lastFireTime = SDL_GetTicks();
         }
     }
     static Uint32 lastEnemySpawnTime = SDL_GetTicks(); // 上次生成敌机的时间

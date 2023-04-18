@@ -1,10 +1,7 @@
 #include <SDL2/SDL.h>
 #include "../core/Map.h" // 引入 Map 类
-#include "../core/Player.h" // 在 Game 类的实现文件中引入 Player 类
-#include "../core/Bullet.h" // 包含 Bullet 类的头文件
-#include "../core/Bomb.h"
-#include "../core/Enemy.h"
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 #include <vector>
 
 
@@ -44,6 +41,10 @@ private:
     SDL_Texture *bg_texture1;
     SDL_Texture *bg_texture2;
 
+    SDL_Texture *texture;
+
+    TTF_Font *pauseFont;
+
     // 添加玩家图片纹理
     Player player; // 添加 Player 对象
     SDL_Texture* playerTexture; // 添加玩家纹理
@@ -52,8 +53,8 @@ private:
     SDL_Texture* bulletTexture; // 子弹纹理
     std::vector<Bullet> bullets; // 子弹对象容器
     Uint32 lastFireTime;         // 上次发射子弹的时间
-    const int fireInterval = 200; // 子弹发射间隔（毫秒）
-    const int magazineSize = 10;  // 弹夹容量
+    const int fireInterval = 500; // 子弹发射间隔（毫秒）
+    const int magazineSize = 30;  // 弹夹容量
 
     //Enemy enemy;// 添加 Enemy 对象
     std::vector<Enemy> enemies;//添加敌机向量
@@ -66,8 +67,10 @@ private:
     //Menu
     enum class GameState {
          MainMenu,
-         ControlMenu,
          OptionsMenu,
+         ControlMenu,
+         MouseControl,
+         KeyboardControl,
          Running,
          Paused
     };
@@ -77,18 +80,43 @@ private:
     int optionsMenuSelection;
 
     // 用户选项
-    bool autoFire;
+    void fireBullet();
+    bool autoFire;//auto fire
+    Uint32 autoFireTimer = 0;        // 计时器
+    const Uint32 autoFireInterval = 500; // 以毫秒为单位的开火间隔
+
     bool useKeyboardControl; // 定义 useKeyboardControl 变量
 
-    // ...
 
-    void renderMainMenu();
-    void renderOptionsMenu();
-    void renderControlMenu();
+    // ...
+    enum class ControlType {
+        Keyboard,
+        Mouse
+    };
+    ControlType currentControlType = ControlType::Keyboard;
+
+
+
     void handleMainMenuEvents(SDL_Event &event);
     void handleOptionsMenuEvents(SDL_Event &event);
     void handleRunningEvents(SDL_Event &event);
     void handleControlMenuEvents(SDL_Event &event);
+    void handlePausedEvents(SDL_Event &event);
+    void handleKeyboardControlMenuEvents(SDL_Event& event);
+    void handleMouseControlMenuEvents(SDL_Event& event);
+
+
+    void handleMenuEvents(SDL_Event &event);
+
+
+    void renderMainMenu();
+    void renderOptionsMenu();
+    void renderControlMenu();
+    void renderKeyboardControlMenu();
+    void renderMouseControlMenu();
+    void renderPausedScreen();
+
+
 
 
     SDL_Texture *titleTexture;
@@ -104,6 +132,7 @@ private:
     SDL_Texture *mouseTextureSelected;
     SDL_Texture *mouseTextureUnselected;
     int controlSelection;
+    int controlMenuSelection;
 };
 
 

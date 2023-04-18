@@ -1,6 +1,10 @@
 #ifndef MAP_H
 #define MAP_H
-
+#include "Bomb.h"
+#include "Bullet.h"
+#include "Enemy.h"
+#include "Player.h"
+#include "config.h"
 #include <string>
 
 const int MAX_MAP_WIDTH = 512;
