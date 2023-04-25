@@ -1209,6 +1209,7 @@ void Game::fireBullet(Bullet::BulletTrajectory trajectory) {
             break;
     }
 }
+
 void Game::fireSingleBullet(Bullet::BulletTrajectory trajectory) {
     int playerX = player.getX();
     int playerY = player.getY();
@@ -1223,8 +1224,8 @@ void Game::fireSingleBullet(Bullet::BulletTrajectory trajectory) {
 
     if (inactiveBullet != nullptr) {
         // 飞机对象具有 getX() 和 getY() 方法，返回飞机的位置
-        int initialBulletX = playerX + (50 / 2);  
-        int initialBulletY = playerY;            
+        int initialBulletX = playerX + 16;  
+        int initialBulletY = playerY -25;            
 
         // 假设子弹速度为 5，根据实际情况调整
         int bulletSpeed = 10;
@@ -1232,10 +1233,80 @@ void Game::fireSingleBullet(Bullet::BulletTrajectory trajectory) {
         inactiveBullet->setState(Bullet::BulletState::Active);
         inactiveBullet->setX(initialBulletX);    
         inactiveBullet->setY(initialBulletY);    
-        inactiveBullet->setSpeed(bulletSpeed);
+        inactiveBullet->setSpeedX(0);
+        inactiveBullet->setSpeedY(-bulletSpeed);
         inactiveBullet->setTrajectory(trajectory);
     }
 };
+
+void Game::fireMultipleBullets(Bullet::BulletTrajectory trajectory, int bulletCount) {
+    int playerX = player.getX();
+    int playerY = player.getY();
+    float angleIncrement;
+
+    
+    // 寻找未激活的子弹，发射它们
+    int bulletsFired = 0;
+    for (Bullet &bullet : bullets) {
+        if (bullet.getState() == Bullet::BulletState::Inactive) {
+            bullet.setState(Bullet::BulletState::Active);
+            bullet.setSpeed(10);
+            bullet.setTrajectory(trajectory);
+
+            // 根据轨迹和子弹数量设置子弹的初始位置
+            switch (trajectory) {
+                case Bullet::BulletTrajectory::Weapon2:
+                    if (bulletsFired == 0) {
+                        bullet.setX(playerX);
+                    } else {
+                        bullet.setX(playerX+25);
+                    }
+                    bullet.setSpeedX(0);
+                    bullet.setSpeedY(-10);
+                    bullet.setY(playerY-25);
+                    break;
+
+                case Bullet::BulletTrajectory::Weapon3:
+                    bullet.setX(playerX - 10 + bulletsFired * 25);
+                    bullet.setY(playerY-25);
+                    bullet.setSpeedX(0);
+                    bullet.setSpeedY(-10);
+                    break;
+
+                case Bullet::BulletTrajectory::Weapon4:
+                {
+                    angleIncrement = 24.0 / (bulletCount - 1);
+                    float angle1 = -12 + bulletsFired * angleIncrement;
+                    bullet.setX(playerX+16);
+                    bullet.setY(playerY-25);
+                    bullet.setSpeedX(10 * cos((angle1 - 90) * M_PI / 180.0));
+                    bullet.setSpeedY(10 * sin((angle1 - 90) * M_PI / 180.0));
+                    break;
+                }
+
+                case Bullet::BulletTrajectory::Weapon5:
+                {
+                    angleIncrement = 36.0 / (bulletCount - 1);
+                    float angle2 = -18 + bulletsFired * angleIncrement;
+                    bullet.setX(playerX+16);
+                    bullet.setY(playerY-25);
+                    bullet.setSpeedX(10 * cos((angle2 - 90) * M_PI / 180.0));
+                    bullet.setSpeedY(10 * sin((angle2 - 90) * M_PI / 180.0));
+                    break;
+                }
+
+                default:
+                    break;
+            }
+
+            bulletsFired++;
+            if (bulletsFired >= bulletCount) {
+                break;
+            }
+        }
+    }
+};
+
 
 
 void Game::update() {
