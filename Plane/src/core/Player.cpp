@@ -1,8 +1,7 @@
 #include "Player.h"
-#include "config.h"
 
 Player::Player(int windowWidth, int windowHeight)
-    : windowWidth(windowWidth), windowHeight(windowHeight) {
+    : windowWidth(windowWidth), windowHeight(windowHeight),health(20){
     x = windowWidth / 2;
     y = windowHeight - 50; // 假设玩家对象的高度约为 50
 }
@@ -61,12 +60,27 @@ void Player::setY(int y) {
     }
 }
 
+int Player::getHealth() const {
+    return health;
+}
+
+void Player::setHealth(int newHealth) {
+    health = newHealth;
+} 
+
+void Player::reset(){
+    x = windowWidth / 2;
+    y = windowHeight - 50; 
+};
+
+
+
 
 SDL_Rect Player::getCollisionRect() const {
     SDL_Rect rect;
     rect.x = x;
     rect.y = y;
-    rect.w = 50; // 假设玩家宽度为 50
-    rect.h = 50; // 假设玩家高度为 50
+    rect.w = 30; // 假设玩家宽度为 30
+    rect.h = 30; // 假设玩家高度为 30
     return rect;
 }

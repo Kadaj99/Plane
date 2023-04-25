@@ -1,25 +1,24 @@
 #include "Map.h"
-#include "config.h"
 
 Map::Map()
 {
 
-    map1_posY = -GAME_HEIGHT;
+    map1_posY = -768;
     map2_posY = 0;
 
-    scroll_speed = MAP_SCORLL_SPEED;
+    scroll_speed = 4;
 
 }
 
 void Map::mapPosition(int scroll_speed) {
     map1_posY += scroll_speed;
-    if (map1_posY >= GAME_HEIGHT) {
-        map1_posY = -GAME_HEIGHT + scroll_speed;
+    if (map1_posY >= 768) {
+        map1_posY = -768 + scroll_speed;
     }
 
     map2_posY += scroll_speed;
-    if (map2_posY >= GAME_HEIGHT) {
-        map2_posY = -GAME_HEIGHT + scroll_speed;
+    if (map2_posY >= 768) {
+        map2_posY = -768 + scroll_speed;
     }
 }
 

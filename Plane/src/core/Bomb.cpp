@@ -6,6 +6,7 @@ Bomb::Bomb(int x, int y) : x(x), y(y), currentFrame(0), maxFrames(7), state(Bomb
 }
 
 
+
 Bomb::~Bomb() {
 }
 
@@ -17,12 +18,12 @@ int Bomb::getY() const {
     return y;
 }
 
-void Bomb::setX(int x) {
-    this->x = x;
+void Bomb::setX(int bx) {
+    this->x = bx;
 }
 
-void Bomb::setY(int y) {
-    this->y = y;
+void Bomb::setY(int by) {
+    this->y = by;
 }
 
 Bomb::BombState Bomb::getState() const {
@@ -50,3 +51,5 @@ void Bomb::update(Uint32 currentTime) {
 int Bomb::getCurrentFrame() const {
     return currentFrame;
 }
+
+

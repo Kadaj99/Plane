@@ -1,12 +1,20 @@
 #include "Bullet.h"
 
-Bullet::Bullet(int x, int y, int speed)
-    : x(x), y(y), speed(speed), state(BulletState::Inactive) {
-}
+
+Bullet::Bullet(int x, int y, int speed, BulletTrajectory trajectory)
+    : x(x), y(y), speed(speed), trajectory(trajectory), state(BulletState::Active) {}
+
+
 
 void Bullet::update() {
     if (state == BulletState::Active) {
-        y -= speed;
+        x += speedX;
+        y += speedY;
+
+        // 如果子弹超出窗口边界，将状态设置为"Inactive"
+        if (y < 0 || x < 0 || x > 512) {
+            state = BulletState::Inactive;
+        }
     }
 }
 
@@ -40,6 +48,38 @@ int Bullet::getSpeed() const {
 
 void Bullet::setSpeed(int speed) {
     this->speed = speed;
+}
+
+void Bullet::setSpeedX(float speedX) {
+    this->speedX = speedX;
+}
+
+void Bullet::setSpeedY(float speedY) {
+    this->speedY = speedY;
+}
+
+void Bullet::reset(){
+    state=BulletState::Inactive;
+}
+
+int Bullet::getDamage() const {
+    return damage;
+}
+
+void Bullet::setDamage(int newDamage) {
+    damage = newDamage;
+}
+
+int Bullet::getFireInterval() const {
+    return fireInterval;
+}
+
+void Bullet::setFireInterval(int newFireInterval) {
+    fireInterval = newFireInterval;
+}
+
+void Bullet::setTrajectory(BulletTrajectory newTrajectory) {
+    trajectory = newTrajectory;
 }
 
 SDL_Rect Bullet::getCollisionRect() const {

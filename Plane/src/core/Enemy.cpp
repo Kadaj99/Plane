@@ -5,10 +5,6 @@ Enemy::Enemy(int x, int y, int interval, int speed)
 {}
 
 
-
-Enemy::~Enemy()
-{}
-
 int Enemy::getX() const {
     return x;
 }
@@ -17,12 +13,12 @@ int Enemy::getY() const {
     return y;
 }
 
-void Enemy::setX(int x) {
-    x = x;
+void Enemy::setX(int setx) {
+    x = setx;
 }
 
-void Enemy::setY(int y) {
-    y = y;
+void Enemy::setY(int sety) {
+    y = sety;
 }
 
 Enemy::EnemyState Enemy::getState() const {
@@ -33,12 +29,17 @@ void Enemy::setState(EnemyState newState) {
     state = newState;
 }
 
+
 int Enemy::getInterval() const {
     return interval;
 }
 
 int Enemy::getSpeed() const {
     return speed;
+}
+
+void Enemy::setSpeed(int setSpeed){
+    speed = setSpeed;
 }
 
 // 修改Enemy类的update()函数
@@ -55,13 +56,15 @@ void Enemy::update() {
         y += speed;
 
         // 如果敌机下落到地图边界外，将状态设置为"Inactive"
-        if (y > GAME_HEIGHT) {
+        if (y > 768) {
             state = EnemyState::Inactive;
         }
     }
 }
 
-
+void Enemy::reset(){
+    state=EnemyState::Inactive;
+}
 
 SDL_Rect Enemy::getCollisionRect() const {
     SDL_Rect rect;
