@@ -11,6 +11,7 @@
 #include "Collision.h"
 #include "ScoreManager.h"
 #include "Map.h"
+#include "Enhance.h"
 
 class Game {
 public:
@@ -22,6 +23,7 @@ public:
         KeyboardControl,
         Running,
         Pause,
+        Store,
         GameOver
 };
     GameState currentState;
@@ -31,8 +33,12 @@ public:
     int controlMenuSelection;
     int levelMenuSelection;
     int magazineSize = 100;
+    GameState previousState;
     GameState getCurrentState() const { return currentState; }
-    void setCurrentState(GameState state) { currentState = state; }
+    bool hasStateChanged() const { return currentState != previousState; }
+    void setCurrentState(GameState state) { 
+        previousState = currentState;
+        currentState = state; }
     
     Game();
     Game(int windowWidth, int windowHeight);
@@ -94,6 +100,8 @@ public:
         currentLevel = level;
     }
 
+    void switchWeapon(int weaponLevel);
+
     uint32_t getMyTimer() const { return myTimer; }
     void updateMyTimer(uint32_t deltaTime);
 
@@ -133,6 +141,7 @@ private:
     std::vector<Bomb> bombs;
     std::vector<Drop> drops;
     ScoreManager scoreManager;
+    Enhance enhance;
 
     void fireBullet(Bullet::BulletTrajectory trajectory);
     void fireDefault(Bullet::BulletTrajectory trajectory);
@@ -146,5 +155,5 @@ private:
     uint32_t lastFireTime;
     const int fireInterval = 500;
     uint32_t lastDropSpawnTime;
-    const int dropSpawnInterval = 5000;
+    const int dropSpawnInterval = 3000;
 };

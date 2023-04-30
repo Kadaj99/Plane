@@ -90,8 +90,11 @@ private:
     Mix_Music *menuMusic = nullptr;
     Mix_Music *gameMusic = nullptr;
     Mix_Chunk *bombSound = nullptr;
+    Mix_Music *currentMusic = nullptr;
     bool isMusicPaused;
 
+    TTF_Font *titleFont;
+    TTF_Font *menuFont;
     TTF_Font *pauseFont;
     TTF_Font *scoreFont;
     TTF_Font *gameOverFont;

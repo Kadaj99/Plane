@@ -78,8 +78,6 @@ bool sdlGame::initSDL() {
     titleTexture = IMG_LoadTexture(renderer,"data/title.png");
     startGameTextureSelected = IMG_LoadTexture(renderer,"data/start2.png");
     startGameTextureUnselected = IMG_LoadTexture(renderer,"data/start1.png");
-    optionsTextureSelected = IMG_LoadTexture(renderer,"data/option2.png");
-    optionsTextureUnselected = IMG_LoadTexture(renderer,"data/option1.png");
     controlsTextureSelected = IMG_LoadTexture(renderer, "data/c2.png");
     controlsTextureUnselected = IMG_LoadTexture(renderer, "data/c1.png");
 
@@ -169,20 +167,11 @@ bool sdlGame::initSDL() {
     //font.ttf
     TTF_Init();
 
-    pauseFont = TTF_OpenFont("data/font1.ttf", 64);
-    if (!pauseFont) {
-        cout << "Failed to load pause font: " << TTF_GetError() << endl;
-    }
+    pauseFont = TTF_OpenFont("data/font2.ttf", 64);
     scoreFont = TTF_OpenFont("data/font3.ttf", 24);
-    if (!scoreFont) {
-        cout << "Failed to load score font: " << TTF_GetError() << endl;
-    }
-
     gameOverFont = TTF_OpenFont("data/font2.ttf", 80); // 24是字体大小，可以根据需要更改
-    if (!gameOverFont) {
-        std::cout << "Failed to load over font: " << TTF_GetError() << std::endl;
-        isRunning = false;
-    }
+    titleFont = TTF_OpenFont("data/fontTitle.ttf", 48);
+    menuFont = TTF_OpenFont("data/fontMenu.ttf", 36);
 
     //BackGroundMusic
     // Handle the error
@@ -236,8 +225,6 @@ void sdlGame::cleanUpSDL() {
     SDL_DestroyTexture(titleTexture);
     SDL_DestroyTexture(startGameTextureSelected);
     SDL_DestroyTexture(startGameTextureUnselected);
-    SDL_DestroyTexture(optionsTextureSelected);
-    SDL_DestroyTexture(optionsTextureUnselected);
 
     SDL_DestroyTexture(keyboardTextureSelected);
     SDL_DestroyTexture(keyboardTextureUnselected);
@@ -345,20 +332,28 @@ void sdlGame::resumeMusic() {
 }
 
 void sdlGame::updateMusic() {
+    Mix_Music* targetMusic = nullptr;
+    
     if (game.currentState == Game::GameState::MainMenu) {
-        if (Mix_PlayingMusic() == 0) {
-            playMusic(menuMusic);
-        }
+        targetMusic = menuMusic;
     } else if (game.currentState == Game::GameState::Running) {
-        if (Mix_PlayingMusic() == 0) {
-            playMusic(gameMusic);
-            cout << "gameM is playing" << endl;
+        targetMusic = gameMusic;
+        if(game.getBombSound()==true){
+            Mix_PlayChannel(-1, bombSound, 0);
+            game.setBombSound(false);
         }
     } else if (game.currentState == Game::GameState::GameOver) {
+        targetMusic = menuMusic;
+    }
+
+    if (currentMusic != targetMusic) {
         stopMusic();
-        playMusic(menuMusic);
+        playMusic(targetMusic);
+        currentMusic = targetMusic;
     }
 }
+
+
 
 
     
@@ -733,11 +728,11 @@ void sdlGame::renderMainMenu() {
         renderTexture(startGameTextureUnselected, renderer, positionX, positionY);
     }
 
-    // 渲染 "Options" 菜单项
+    // 渲染 "Controls" 菜单项
     if (game.menuSelection  == 1) {
-        renderTexture(optionsTextureSelected, renderer, positionX, positionY + 50);
+        renderTexture(controlsTextureSelected, renderer, positionX, positionY + 50);
     } else {
-        renderTexture(optionsTextureUnselected, renderer, positionX, positionY + 50);
+        renderTexture(controlsTextureUnselected, renderer, positionX, positionY + 50);
     }
 
     // 渲染 "Level" 菜单项

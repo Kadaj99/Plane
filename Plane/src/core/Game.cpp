@@ -27,6 +27,7 @@ Game::Game(int windowWidth, int windowHeight)
     scroll_speed = 3;
     lastFireTime = 0;
     lastDropSpawnTime = 0;
+    useKeyboardControl = false;
 
 
     // 如果需要默认开启 autoFire，将其设置为 true
@@ -36,6 +37,7 @@ Game::Game(int windowWidth, int windowHeight)
 void Game::updateMyTimer(uint32_t deltaTime) {
     myTimer += deltaTime;
 }
+
 
 void Game::menuInput(const char input){
       switch (input) {
@@ -80,6 +82,10 @@ void Game::runningInput(const char input){
             break;
         case 'p':
             currentState = GameState::Pause;
+            break;
+        case 'e':
+            saveScore();
+            currentState = GameState::MainMenu;
             break;
 
     default:
@@ -134,7 +140,6 @@ void Game::levelInput(const char input){
 }
 ;
 void Game::checkCollisions() {
-    bool playSound = false;
     for (auto& enemy : enemies) {
         if (enemy.getState() == Enemy::EnemyState::Active) {
             // 检查子弹与敌机的碰撞
@@ -224,6 +229,27 @@ void Game::resetGameObjects() {
 }
 
 
+void Game::switchWeapon(int weaponLevel) {
+    switch (weaponLevel) {
+        case 2:
+            fireBullet(Bullet::BulletTrajectory::Weapon2);
+            break;
+        case 3:
+            fireBullet(Bullet::BulletTrajectory::Weapon3);
+            break;
+        case 4:
+            fireBullet(Bullet::BulletTrajectory::Weapon4);
+            break;
+        case 5:
+            fireBullet(Bullet::BulletTrajectory::Weapon5);
+            break;
+        default:
+            fireBullet(Bullet::BulletTrajectory::Weapon1);
+            break;
+    }
+}
+
+
 void Game::fireBullet(Bullet::BulletTrajectory trajectory) {
     switch (trajectory) {
         case Bullet::BulletTrajectory::Weapon2:
@@ -244,6 +270,7 @@ void Game::fireBullet(Bullet::BulletTrajectory trajectory) {
     }
 }
 
+
 void Game::fireDefault(Bullet::BulletTrajectory trajectory) {
     int playerX = player.getX();
     int playerY = player.getY();
@@ -262,7 +289,7 @@ void Game::fireDefault(Bullet::BulletTrajectory trajectory) {
         int initialBulletY = playerY -25;            
 
         // 假设子弹速度为 5，根据实际情况调整
-        int bulletSpeed = 5;
+        int bulletSpeed = 10;
 
         inactiveBullet->setState(Bullet::BulletState::Active);
         inactiveBullet->setX(initialBulletX);    
@@ -413,12 +440,12 @@ void Game::update() {
         enemy.update();
     }
 
-    // 每3生成一个补给
+    // 生成一个补给
     if (currentTime - lastDropSpawnTime >= dropSpawnInterval) {
         int randomX = rand() % 512;
         int randomType = rand() % 2;
         Drop::DropType dropType = static_cast<Drop::DropType>(randomType);
-        drops.emplace_back(randomX, 0, 3, dropType);
+        drops.emplace_back(randomX, 0, 5, dropType);
         lastDropSpawnTime = currentTime;
     }
 
