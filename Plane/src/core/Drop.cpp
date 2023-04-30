@@ -1,8 +1,9 @@
 #include "Drop.h"
 
 Drop::Drop(int x, int y, int speed, DropType type)
-: x(x), y(y), speed(speed), type(type), active(true)
+: x(x), y(y), speed(speed), active(true), width_(20), height_(20), type(type)
 {}
+
 
 int Drop::getX() const {
     return x;
@@ -20,7 +21,7 @@ void Drop::setY(int sety) {
     y = sety;
 }
 
-DropType Drop::getType() const {
+Drop::DropType Drop::getType() const {
     return type;
 }
 
@@ -42,11 +43,11 @@ void Drop::update() {
     }
 }
 
-SDL_Rect Drop::getCollisionRect() const {
-    SDL_Rect rect;
+Rect::My_Rect Drop::getCollisionRect() const {
+    Rect::My_Rect rect;
     rect.x = x;
     rect.y = y;
-    rect.w = 20; // 假设玩家宽度为 20
-    rect.h = 20; // 假设玩家高度为 20
+    rect.w = width_;
+    rect.h = height_;
     return rect;
 }

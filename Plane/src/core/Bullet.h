@@ -1,163 +1,180 @@
 /**
  * @file Bullet.h
- * @brief Definition of the Bullet class representing a bullet object.
+ * @brief Définition de la classe Bullet représentant une balle.
  */
 
 #ifndef BULLET_H
 #define BULLET_H
 
-#include "SDL2/SDL.h"
+#include "Collision.h"
 
 /**
  * @class Bullet
- * @brief A class representing a bullet object.
+ * @brief Classe représentant une balle.
  */
 class Bullet {
 public:
+    /**
+     * @brief Énumération des trajectoires possibles des balles.
+     */
     enum class BulletTrajectory {
-            Weapon1,
-            Weapon2,
-            Weapon3,
-            Weapon4,
-            Weapon5
+        Weapon1,
+        Weapon2,
+        Weapon3,
+        Weapon4,
+        Weapon5
     };
 
-    BulletTrajectory trajectory;
     /**
-     * @brief Construct a new Bullet object.
-     * @param x The x-coordinate of the bullet.
-     * @param y The y-coordinate of the bullet.
-     * @param speed The speed of the bullet.
+     * @brief Construit une nouvelle balle.
+     * @param x La coordonnée x de la balle.
+     * @param y La coordonnée y de la balle.
+     * @param speed La vitesse de la balle.
+     * @param trajectory La trajectoire de la balle.
      */
-    
     Bullet(int x, int y, int speed, BulletTrajectory trajectory);
 
+    /**
+     * @brief Construit une nouvelle balle.
+     */
+    Bullet();
 
     /**
-     * @brief Enumeration of possible bullet states.
+     * @brief Énumération des états possibles des balles.
      */
     enum class BulletState {
-        Active,     /**< The bullet is active */
-        Inactive    /**< The bullet is inactive */
+        Active,     /**< La balle est active */
+        Inactive    /**< La balle est inactive */
     };
 
     /**
-     * @brief Set the x-coordinate of the bullet.
-     * @param x The new x-coordinate.
+     * @brief Modifie la coordonnée x de la balle.
+     * @param x La nouvelle coordonnée x.
      */
     void setX(int x);
 
     /**
-     * @brief Set the y-coordinate of the bullet.
-     * @param y The new y-coordinate.
+     * @brief Modifie la coordonnée y de la balle.
+     * @param y La nouvelle coordonnée y.
      */
     void setY(int y);
 
     /**
-     * @brief Get the state of the bullet.
-     * @return The state of the bullet.
+     * @brief Récupère l'état de la balle.
+     * @return L'état de la balle.
      */
     BulletState getState() const;
 
     /**
-     * @brief Set the state of the bullet.
-     * @param newState The new state.
+     * @brief Modifie l'état de la balle.
+     * @param newState Le nouvel état.
      */
     void setState(BulletState newState);
 
     /**
-     * @brief Get the x-coordinate of the bullet.
-     * @return The x-coordinate of the bullet.
+     * @brief Récupère la coordonnée x de la balle.
+     * @return La coordonnée x de la balle.
      */
     int getX() const;
 
     /**
-     * @brief Get the y-coordinate of the bullet.
-     * @return The y-coordinate of the bullet.
+     * @brief Récupère la coordonnée y de la balle.
+     * @return La coordonnée y de la balle.
      */
     int getY() const;
 
     /**
-     * @brief Get the speed of the bullet.
-     * @return The speed of the bullet.
+     * @brief Récupère la vitesse de la balle.
+     * @return La vitesse de la balle.
      */
     int getSpeed() const;
 
     /**
-     * @brief Set the speed of the bullet.
-     * @param speed The new speed.
+     * @brief Modifie la vitesse de la balle.
+     * @param speed La nouvelle vitesse.
      */
     void setSpeed(int speed);
 
     /**
-     * @brief Reset the bullet object.
+     * @brief Réinitialise l'objet balle.
      */
     void reset();
 
-     /**
-     * @brief Get the bullet's damage.
-     * @return The bullet's damage.
+    /**
+     * @brief Récupère les dégâts de la balle.
+     * @return Les dégâts de la balle.
      */
     int getDamage() const;
 
     /**
-     * @brief Set the bullet's damage.
-     * @param newDamage The new damage value for the bullet.
+     * @brief Modifie les dégâts de la balle.
+     * @param newDamage Les nouveaux dégâts.
      */
     void setDamage(int newDamage);
 
     /**
-     * @brief Get the bullet's fire interval.
-     * @return The bullet's fire interval.
+     * @brief Récupère l'intervalle de génération de la balle.
+     * @return L'intervalle de génération de la balle.
      */
     int getFireInterval() const;
 
     /**
-     * @brief Set the bullet's fire interval.
-     * @param newFireInterval The new fire interval for the bullet.
-     */
+     * @brief Modifie l'intervalle de génération de la balle.
+     * @param newFireInterval Le nouvel intervalle de génération.
+    */
     void setFireInterval(int newFireInterval);
 
     /**
-     * @brief Get the bullet's trajectory.
-     * @return The bullet's trajectory.
+     * @brief Récupère la trajectoire de la balle.
+     * @return La trajectoire de la balle.
      */
     int getTrajectory() const;
 
     /**
-     * @brief Set the bullet's trajectory.
-     * @param newTrajectory The new trajectory for the bullet.
+     * @brief Modifie la trajectoire de la balle.
+     * @param newTrajectory La nouvelle trajectoire.
      */
     void setTrajectory(BulletTrajectory newTrajectory);
 
-
     /**
-     * @brief Update the bullet object.
+     * @brief Met à jour l'objet balle.
      */
     void update();
 
+    /**
+     * @brief Modifie la vitesse horizontale de la balle.
+     * @param speedX La nouvelle vitesse horizontale.
+     */
     void setSpeedX(float speedX);
-    void setSpeedY(float speedY);
-
-
 
     /**
-     * @brief Get the collision rectangle of the bullet.
-     * @return The collision rectangle of the bullet.
+     * @brief Modifie la vitesse verticale de la balle.
+     * @param speedY La nouvelle vitesse verticale.
      */
-    SDL_Rect getCollisionRect() const;
+    void setSpeedY(float speedY);
+
+    /**
+     * @brief Récupère le rectangle de collision de la balle.
+     * @return Le rectangle de collision de la balle.
+     */
+    Rect::My_Rect getCollisionRect() const;
+    private:
+    int x; /**< La coordonnée x de la balle. */
+    int y; /**<La coordonnée y de la balle. */
+    BulletTrajectory trajectory; /**< La trajectoire de la balle. */
+    float speedX; /**< La vitesse horizontale de la balle. */
+    float speedY; /**< La vitesse verticale de la balle. */
+    int bulletWidth; /**< La largeur de la balle. */
+    int bulletHeight; /**< La hauteur de la balle. */
+    int speed; /**< La vitesse de la balle. */
+    BulletState state; /**< L'état de la balle. */
+    int damage; /**< Les dégâts de la balle. */
+    int fireInterval; /**< L'intervalle de génération de la balle. */
+    };
+
+    #endif // BULLET_H
 
 
-private:
-    int x;                      /**< The x-coordinate of the bullet. */
-    int y;                      /**< The y-coordinate of the bullet. */
-    float speedX;
-    float speedY;
-    int speed;                  /**< The speed of the bullet. */
-    BulletState state;          /**< The state of the bullet. */
-    int damage; // 子弹伤害
-    int fireInterval; // 子弹生成间隔（攻击速度）
-    
-};
-    
-#endif // BULLET_H
+
+
+

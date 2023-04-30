@@ -35,13 +35,13 @@ void Bomb::setState(BombState newState) {
 }
 
 
-void Bomb::update(Uint32 currentTime) {
+void Bomb::update(uint32_t currentTime) {
     if (state == BombState::Active) {
         if (currentTime - lastFrameTime >= frameDuration) {
             currentFrame++;
             lastFrameTime = currentTime;
 
-            if (currentFrame >= 7) {
+            if (currentFrame >= maxFrames) {
                 state = BombState::Inactive;
             }
         }

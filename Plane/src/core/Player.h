@@ -1,12 +1,7 @@
-/**
- * @file Player.h
- * @brief Definition of the Player class.
- */
 
 #ifndef PLAYER_H
 #define PLAYER_H
-
-#include "SDL2/SDL.h"
+#include "Collision.h"
 
 /**
  * @class Player
@@ -21,29 +16,10 @@ public:
      */
     Player(int windowWidth, int windowHeight);
 
-    /**
-     * @brief Move the player left.
-     * @param speed The speed of movement.
-     */
-    void moveLeft(int speed);
-
-    /**
-     * @brief Move the player right.
-     * @param speed The speed of movement.
-     */
-    void moveRight(int speed);
-
-    /**
-     * @brief Move the player up.
-     * @param speed The speed of movement.
-     */
-    void moveUp(int speed);
-
-    /**
-     * @brief Move the player down.
-     * @param speed The speed of movement.
-     */
-    void moveDown(int speed);
+    void moveLeft();
+    void moveRight();
+    void moveUp();
+    void moveDown();
 
     /**
      * @brief Get the x-coordinate of the player.
@@ -78,7 +54,7 @@ public:
      * @brief Get the collision rectangle of the player.
      * @return The collision rectangle of the player.
      */
-    SDL_Rect getCollisionRect() const;
+    Rect::My_Rect getCollisionRect() const;
 
      /**
      * @brief Get the player's health.
@@ -95,9 +71,12 @@ public:
 private:
     int x;                  /**< The x-coordinate of the player. */
     int y;                  /**< The y-coordinate of the player. */
+    int speed;
     int windowWidth;        /**< The width of the game window. */
     int windowHeight;       /**< The height of the game window. */
-    int health;             /**< The health of the player. */
+    int playerWidth;        /**< The width of the player. */
+    int playerHeight;       /**< The height of the player. */
+    //int health;             /**< The health of the player. */
 };
 
 #endif // PLAYER_H

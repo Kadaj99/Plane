@@ -1,35 +1,37 @@
 #include "Player.h"
 
 Player::Player(int windowWidth, int windowHeight)
-    : windowWidth(windowWidth), windowHeight(windowHeight),health(20){
+    : speed(8), windowWidth(windowWidth), windowHeight(windowHeight),
+       playerWidth(30), playerHeight(30) {
     x = windowWidth / 2;
     y = windowHeight - 50; // 假设玩家对象的高度约为 50
 }
 
-void Player::moveLeft(int speed) {
+void Player::moveLeft() {
     x -= speed;
     if (x < 0) {
         x = 0;
     }
 }
 
-void Player::moveRight(int speed) {
+
+void Player::moveRight() {
     x += speed;
     if (x > windowWidth - 50) { // 假设玩家对象的宽度约为 50
         x = windowWidth - 50;
     }
 }
 
-void Player::moveUp(int speed) {
+void Player::moveUp() {
     y -= speed;
     if (y < 0) {
         y = 0;
     }
 }
 
-void Player::moveDown(int speed) {
+void Player::moveDown() {
     y += speed;
-    if (y > windowHeight - 50) { // 假设玩家对象的高度约为 50
+    if (y > windowHeight - 50) { // 假设玩家对象的高度约为 30
         y = windowHeight - 50;
     }
 }
@@ -59,7 +61,7 @@ void Player::setY(int y) {
         this->y = windowHeight - 50;
     }
 }
-
+/*
 int Player::getHealth() const {
     return health;
 }
@@ -67,6 +69,8 @@ int Player::getHealth() const {
 void Player::setHealth(int newHealth) {
     health = newHealth;
 } 
+*/
+
 
 void Player::reset(){
     x = windowWidth / 2;
@@ -76,11 +80,11 @@ void Player::reset(){
 
 
 
-SDL_Rect Player::getCollisionRect() const {
-    SDL_Rect rect;
+Rect::My_Rect Player::getCollisionRect() const {
+    Rect::My_Rect rect;
     rect.x = x;
     rect.y = y;
-    rect.w = 30; // 假设玩家宽度为 30
-    rect.h = 30; // 假设玩家高度为 30
+    rect.w = playerWidth;
+    rect.h = playerHeight;
     return rect;
 }

@@ -1,100 +1,101 @@
 /**
  * @file Bomb.h
- * @brief Definition of the Bomb class representing a bomb object.
+ * @brief Définition de la classe Bomb représentant un objet bombe.
  */
 
 #ifndef BOMB_H
 #define BOMB_H
 
-#include "SDL2/SDL.h"
+#include "Collision.h"
+#include <cstdint>
 
 /**
  * @class Bomb
- * @brief A class representing a bomb object.
+ * @brief Classe représentant un objet bombe.
  */
 class Bomb {
 public:
     /**
-     * @brief Construct a new Bomb object.
-     * @param x The x-coordinate of the bomb.
-     * @param y The y-coordinate of the bomb.
+     * @brief Construit un nouvel objet Bombe.
+     * @param x La coordonnée x de la bombe.
+     * @param y La coordonnée y de la bombe.
      */
     Bomb(int x, int y);
 
     /**
-     * @brief Destroy the Bomb object.
+     * @brief Détruit l'objet Bombe.
      */
     ~Bomb();
 
     /**
-     * @brief Enumeration of possible bomb states.
+     * @brief Énumération des états possibles de la bombe.
      */
     enum class BombState {
-        Active,     /**< The bomb is active */
-        Inactive    /**< The bomb is inactive */
+        Active,     /**< La bombe est active */
+        Inactive    /**< La bombe est inactive */
     };
 
     /**
-     * @brief Get the state of the bomb.
-     * @return The state of the bomb.
+     * @brief Récupère l'état de la bombe.
+     * @return L'état de la bombe.
      */
     BombState getState() const;
 
     /**
-     * @brief Set the state of the bomb.
-     * @param newState The new state.
+     * @brief Modifie l'état de la bombe.
+     * @param newState Le nouvel état.
      */
     void setState(BombState newState);
 
     /**
-     * @brief Get the x-coordinate of the bomb.
-     * @return The x-coordinate of the bomb.
+     * @brief Récupère la coordonnée x de la bombe.
+     * @return La coordonnée x de la bombe.
      */
     int getX() const;
 
     /**
-     * @brief Get the y-coordinate of the bomb.
-     * @return The y-coordinate of the bomb.
+     * @brief Récupère la coordonnée y de la bombe.
+     * @return La coordonnée y de la bombe.
      */
     int getY() const;
 
     /**
-     * @brief Set the x-coordinate of the bomb.
-     * @param x The new x-coordinate.
+     * @brief Modifie la coordonnée x de la bombe.
+     * @param x La nouvelle coordonnée x.
      */
     void setX(int x);
 
     /**
-     * @brief Set the y-coordinate of the bomb.
-     * @param y The new y-coordinate.
+     * @brief Modifie la coordonnée y de la bombe.
+     * @param y La nouvelle coordonnée y.
      */
     void setY(int y);
 
     /**
-     * @brief Reset the bomb object.
+     * @brief Réinitialise l'objet bombe.
      */
     void reset();
 
     /**
-     * @brief Update the bomb object.
-     * @param currentTime The current time.
+     * @brief Met à jour l'objet bombe.
+     * @param currentTime Le temps actuel.
      */
-    void update(Uint32 currentTime);
+    void update(uint32_t currentTime);
 
     /**
-     * @brief Get the current frame number.
-     * @return The current frame number.
+     * @brief Récupère le numéro de l'image actuelle.
+     * @return Le numéro de l'image actuelle.
      */
     int getCurrentFrame() const;
 
 private:
-    int x;                      /**< The x-coordinate of the bomb. */
-    int y;                      /**< The y-coordinate of the bomb. */
-    int currentFrame;           /**< The current frame number. */
-    int maxFrames;              /**< The maximum number of frames. */
-    BombState state;            /**< The state of the bomb. */
-    Uint32 lastFrameTime;       /**< The time of the last frame. */
-    const Uint32 frameDuration = 60; /**< The duration of each frame. */
+    int x;                      /**< La coordonnée x de la bombe. */
+    int y;                      /**< La coordonnée y de la bombe. */
+    int currentFrame;           /**< Le numéro de l'image actuelle. */
+    int maxFrames;              /**< Le nombre maximum d'images. */
+    BombState state;            /**< L'état de la bombe. */
+    uint32_t lastFrameTime;       /**< Le temps de la dernière image. */
+    const uint32_t frameDuration = 60; /**< La durée de chaque image. */
 };
 
 #endif // BOMB_H

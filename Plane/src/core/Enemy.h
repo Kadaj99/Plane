@@ -1,115 +1,121 @@
 /**
  * @file Enemy.h
- * @brief Definition of the Enemy class representing an enemy object.
+ * @brief Définition de la classe Enemy représentant un ennemi.
  */
 
 #ifndef ENEMY_H
 #define ENEMY_H
 
-#include "SDL2/SDL.h"
+#include "Collision.h"
 #include "Bullet.h"
 #include "Player.h"
-
+#include <stdlib.h>
 
 /**
  * @class Enemy
- * @brief A class representing an enemy object.
+ * @brief Classe représentant un ennemi.
  */
 class Enemy {
 public:
     /**
-     * @brief Construct a new Enemy object.
-     * @param x The x-coordinate of the enemy.
-     * @param y The y-coordinate of the enemy.
-     * @param interval The time interval between each enemy bullet shot.
-     * @param speed The speed of the enemy's movement.
+     * @brief Construit un nouvel ennemi.
+     * @param x La coordonnée x de l'ennemi.
+     * @param y La coordonnée y de l'ennemi.
+     * @param interval L'intervalle de temps entre chaque tir de l'ennemi.
+     * @param speed La vitesse de déplacement de l'ennemi.
      */
     Enemy(int x, int y, int interval, int speed);
+    /**
+     * @brief Construit un nouvel ennemi.
+     */
+    Enemy();
 
     /**
-     * @brief Enumeration of possible enemy states.
+     * @brief Énumération des états possibles de l'ennemi.
      */
     enum class EnemyState {
-        Active,     /**< The enemy is active */
-        Inactive    /**< The enemy is inactive */
+        Active,     /**< L'ennemi est actif */
+        Inactive    /**< L'ennemi est inactif */
     };
 
     /**
-     * @brief Get the x-coordinate of the enemy.
-     * @return The x-coordinate of the enemy.
+     * @brief Récupère la coordonnée x de l'ennemi.
+     * @return La coordonnée x de l'ennemi.
      */
     int getX() const;
 
     /**
-     * @brief Get the y-coordinate of the enemy.
-     * @return The y-coordinate of the enemy.
+     * @brief Récupère la coordonnée y de l'ennemi.
+     * @return La coordonnée y de l'ennemi.
      */
     int getY() const;
 
     /**
-     * @brief Set the x-coordinate of the enemy.
-     * @param x The new x-coordinate.
+     * @brief Modifie la coordonnée x de l'ennemi.
+     * @param x La nouvelle coordonnée x.
      */
     void setX(int x);
 
     /**
-     * @brief Set the y-coordinate of the enemy.
-     * @param y The new y-coordinate.
+     * @brief Modifie la coordonnée y de l'ennemi.
+     * @param y La nouvelle coordonnée y.
      */
     void setY(int y);
 
     /**
-     * @brief Get the state of the enemy.
-     * @return The state of the enemy.
+     * @brief Récupère l'état de l'ennemi.
+     * @return L'état de l'ennemi.
      */
     EnemyState getState() const;
 
     /**
-     * @brief Set the state of the enemy.
-     * @param newState The new state.
+     * @brief Modifie l'état de l'ennemi.
+     * @param newState Le nouvel état.
      */
     void setState(EnemyState newState);
 
     /**
-     * @brief Get the time interval between each enemy bullet shot.
-     * @return The time interval.
+     * @brief Récupère l'intervalle de temps entre chaque tir de l'ennemi.
+     * @return L'intervalle de temps.
      */
     int getInterval() const;
 
     /**
-     * @brief Get the speed of the enemy's movement.
-     * @return The speed of the enemy's movement.
+     * @brief Récupère la vitesse de déplacement de l'ennemi.
+     * @return La vitesse de déplacement de l'ennemi.
      */
     int getSpeed() const;
 
     /**
-     * @brief Set the speed of the enemy's movement.
-     * @param setSpeed The new speed.
+     * @brief Modifie la vitesse de déplacement de l'ennemi.
+     * @param setSpeed La nouvelle vitesse.
      */
     void setSpeed(int setSpeed);
 
     /**
-     * @brief Update the enemy object.
+     * @brief Met à jour l'ennemi.
      */
     void update();
 
     /**
-     * @brief Reset the enemy object.
+     * @brief Réinitialise l'ennemi.
      */
     void reset();
 
     /**
-     * @brief Get the collision rectangle of the enemy.
-     * @return The collision rectangle of the enemy.
+     * @brief Récupère le rectangle de collision de l'ennemi.
+     * @return Le rectangle de collision de l'ennemi.
      */
-    SDL_Rect getCollisionRect() const;
+    Rect::My_Rect getCollisionRect() const;
 
 private:
-    int x;                      /**< The x-coordinate of the enemy. */
-    int y;                      /**< The y-coordinate of the enemy. */
-    int interval;               /**< The time interval between each enemy bullet shot. */
-    int speed;                  /**< The speed of the enemy's movement. */
-    EnemyState state;           /**< The state of the enemy. */
+    int x;                      /**< La coordonnée x de l'ennemi. */
+    int y;                      /**< La coordonnée y de l'ennemi. */
+    int interval;               /**< L'intervalle de temps entre chaque tir de l'ennemi. */
+    int speed;                  /**< La vitesse de déplacement de l'ennemi. */
+    int enemyWidth;             /**< La largeur de l'ennemi. */
+    int enemyHeight;            /**< La hauteur de l'ennemi. */
+    EnemyState state;           /**< L'état de l'ennemi. */
 };
 
 #endif // ENEMY_H

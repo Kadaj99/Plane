@@ -1,8 +1,13 @@
 #include "Enemy.h"
 
 Enemy::Enemy(int x, int y, int interval, int speed)
-: x(x), y(y), interval(interval), speed(speed), state(EnemyState::Active)
+    : x(x), y(y), interval(interval), speed(speed), state(EnemyState::Active),
+      enemyWidth(20), enemyHeight(20) 
 {}
+
+Enemy::Enemy()
+    : x(0), y(0), interval(0), speed(0), state(EnemyState::Active) {
+}
 
 
 int Enemy::getX() const {
@@ -66,11 +71,12 @@ void Enemy::reset(){
     state=EnemyState::Inactive;
 }
 
-SDL_Rect Enemy::getCollisionRect() const {
-    SDL_Rect rect;
+Rect::My_Rect Enemy::getCollisionRect() const {
+    Rect::My_Rect rect;
     rect.x = x;
     rect.y = y;
-    rect.w = 20; // 假设玩家宽度为 20
-    rect.h = 20; // 假设玩家高度为 20
+    rect.w = enemyWidth;
+    rect.h = enemyHeight;
     return rect;
 }
+

@@ -1,2 +1,2 @@
-2
-Highest record: 2
+28
+Highest record: 28

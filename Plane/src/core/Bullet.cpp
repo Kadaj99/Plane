@@ -2,8 +2,9 @@
 
 
 Bullet::Bullet(int x, int y, int speed, BulletTrajectory trajectory)
-    : x(x), y(y), speed(speed), trajectory(trajectory), state(BulletState::Active) {}
-
+    : x(x), y(y),  trajectory(trajectory), bulletWidth(10), bulletHeight(20),
+      state(BulletState::Active), damage(1)
+      {}
 
 
 void Bullet::update() {
@@ -82,11 +83,11 @@ void Bullet::setTrajectory(BulletTrajectory newTrajectory) {
     trajectory = newTrajectory;
 }
 
-SDL_Rect Bullet::getCollisionRect() const {
-    SDL_Rect rect;
+Rect::My_Rect Bullet::getCollisionRect() const {
+    Rect::My_Rect rect;
     rect.x = x;
     rect.y = y;
-    rect.w = 10; // 根据子弹图像的实际大小进行调整
-    rect.h = 20; // 根据子弹图像的实际大小进行调整
+    rect.w = bulletWidth;
+    rect.h = bulletHeight;
     return rect;
 }

@@ -1,13 +1,7 @@
 #include "Map.h"
 
 Map::Map()
-{
-
-    map1_posY = -768;
-    map2_posY = 0;
-
-    scroll_speed = 4;
-
+    : width_(512), height_(768), map1_posY(-768), map2_posY(0), scroll_speed(3) {
 }
 
 void Map::mapPosition(int scroll_speed) {
@@ -20,6 +14,14 @@ void Map::mapPosition(int scroll_speed) {
     if (map2_posY >= 768) {
         map2_posY = -768 + scroll_speed;
     }
+}
+
+int Map::getWidth() const {
+    return width_;
+}
+
+int Map::getHeight() const {
+    return height_;
 }
 
 
