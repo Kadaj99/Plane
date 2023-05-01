@@ -1,6 +1,6 @@
 /**
  * @file Map.h
- * @brief Definition of the Map class.
+ * @brief Définition de la classe Map.
  */
 
 #ifndef MAP_H
@@ -14,51 +14,50 @@
 
 /**
  * @class Map
- * @brief A class representing the game map.
+ * @brief Classe représentant la carte du jeu.
  */
 class Map {
 public:
     /**
-     * @brief Construct a new Map object.
+     * @brief Constructeur d'un nouvel objet Map.
      */
     Map();
 
     /**
-     * @brief Update the position of the map.
-     * @param scroll_speed The speed of scrolling.
+     * @brief Mettre à jour la position de la carte.
+     * @param scroll_speed La vitesse de défilement.
      */
     void mapPosition(int scroll_speed);
 
     /**
-     * @brief Get the width of the map.
-     * @return The width of the map.
+     * @brief Obtenir la largeur de la carte.
+     * @return La largeur de la carte.
      */
     int getWidth() const;
 
     /**
-     * @brief Get the height of the map.
-     * @return The height of the map.
+     * @brief Obtenir la hauteur de la carte.
+     * @return La hauteur de la carte.
      */
     int getHeight() const;
 
     /**
-     * @brief Get the position of map1.
-     * @return The position of map1.
+     * @brief Obtenir la position de la carte1.
+     * @return La position de la carte1.
      */
     int getMap1PosY() const;
 
     /**
-     * @brief Get the position of map2.
-     * @return The position of map2.
+     * @brief Obtenir la position de la carte2.
+     * @return La position de la carte2.
      */
     int getMap2PosY() const;
 
 private:
-    int width_;                 /**< The width of the map. */
-    int height_;                /**< The height of the map. */
-    int map1_posY;              /**< The position of map1. */
-    int map2_posY;              /**< The position of map2. */
-    int scroll_speed;           /**< The speed of scrolling. */
+    int width_;                 /**< La largeur de la carte. */
+    int height_;                /**< La hauteur de la carte. */
+    int map1_posY;              /**< La position de la carte1. */
+    int map2_posY;              /**< La position de la carte2. */
 };
 
 #endif // MAP_H

@@ -1,10 +1,12 @@
+/**
+ * @file sdlGame.cpp
+ * @brief Fichier de code source pour la classe sdlGame
+ */
 #include "mainSDL.h"
 using namespace std;
 #include <iostream>
 #include <sstream>
 #include <iomanip>
-
-
 
 sdlGame::sdlGame(const std::string& title, int width, int height)
     : windowWidth(512), windowHeight(768), title("Dogfighter"), isRunning(true)
@@ -52,77 +54,27 @@ bool sdlGame::initSDL() {
     }
 
     window = SDL_CreateWindow(title.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_SHOWN);
-    if (!window) {
-        cout << "Window creation error: " << SDL_GetError() << endl;
-        return false;
-    }
-
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        cout << "Renderer creation error: " << SDL_GetError() << endl;
-        return false;
-    }
-
     texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, windowWidth, windowHeight);
-    if (texture == nullptr) {
-        cout << "Failed to create texture: " << SDL_GetError() << endl;
-        isRunning = false;
-    }
-
     // 初始化 SDL_image
     if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
         cout << "SDL_image initialization error: " << IMG_GetError() << endl;
         return false;
     }
-    //Menu
-    titleTexture = IMG_LoadTexture(renderer,"data/title.png");
-    startGameTextureSelected = IMG_LoadTexture(renderer,"data/start2.png");
-    startGameTextureUnselected = IMG_LoadTexture(renderer,"data/start1.png");
-    controlsTextureSelected = IMG_LoadTexture(renderer, "data/c2.png");
-    controlsTextureUnselected = IMG_LoadTexture(renderer, "data/c1.png");
-
-    levelTextureSelected = IMG_LoadTexture(renderer,"data/level2.png");
-    levelTextureUnselected = IMG_LoadTexture(renderer,"data/level1.png");
-    easyTextureSelected = IMG_LoadTexture(renderer,"data/easy2.png");
-    easyTextureUnselected = IMG_LoadTexture(renderer,"data/easy1.png");
-    normalTextureSelected = IMG_LoadTexture(renderer,"data/normal2.png");
-    normalTextureUnselected = IMG_LoadTexture(renderer,"data/normal1.png");
-    hardTextureSelected = IMG_LoadTexture(renderer,"data/hard2.png");
-    hardTextureUnselected = IMG_LoadTexture(renderer,"data/hard1.png");
-
-    
     // Load main menu background texture
     SDL_Surface *mainMenuBackgroundSurface = IMG_Load("data/backGroundMenu.jpg");
-    if (!mainMenuBackgroundSurface) {
-        cout << "Failed to load main menu background texture" << endl;
-        return false;
-    }
-
     mainMenuBackgroundTexture = SDL_CreateTextureFromSurface(renderer, mainMenuBackgroundSurface);
-    if (!mainMenuBackgroundTexture) {
-        cout << "Failed to create texture from main menu background surface" << endl;
-        SDL_FreeSurface(mainMenuBackgroundSurface);
-        return false;
-    }
-
     SDL_FreeSurface(mainMenuBackgroundSurface);
-
 
     // 加载玩家图片
     SDL_Surface *player_surface = IMG_Load("data/hero.png");
-    if (!player_surface) {
-        cout << "Error loading player image: " << IMG_GetError() << endl;
-        return false;
-    }
-
     // 创建玩家纹理
     playerTexture = SDL_CreateTextureFromSurface(renderer, player_surface);
-
+    SDL_FreeSurface(player_surface); // 释放已创建纹理的表面
      // 加载敌机纹理
     enemyTexture = IMG_LoadTexture(renderer, "data/img-plane_3.png");
 
     // 创建纹理
-    
     bg_texture1_easy = IMG_LoadTexture(renderer,"data/img_bg_level_1.jpg");
     bg_texture2_easy = IMG_LoadTexture(renderer,"data/img_bg_level_1.jpg");
     bg_texture1_normal = IMG_LoadTexture(renderer,"data/img_bg_level_3.jpg");
@@ -130,21 +82,17 @@ bool sdlGame::initSDL() {
     bg_texture1_hard = IMG_LoadTexture(renderer,"data/img_bg_level_5.jpg");
     bg_texture2_hard = IMG_LoadTexture(renderer,"data/img_bg_level_5.jpg");
 
- 
-    SDL_FreeSurface(player_surface); // 释放已创建纹理的表面
-
-
-
-
-
     // 加载子弹纹理
-    bulletTexture = IMG_LoadTexture(renderer, "data/hero_bullet_7.png");
-    if (!bulletTexture) {
-        cout << "Failed to load bullet texture: " << IMG_GetError() << endl;
-        return false;
-    }
+    bulletTexture1 = IMG_LoadTexture(renderer, "data/bullet_1.png");
+    bulletTexture2 = IMG_LoadTexture(renderer, "data/bullet_2.png");
+    bulletTexture3 = IMG_LoadTexture(renderer, "data/bullet_3.png");
+    bulletTexture4 = IMG_LoadTexture(renderer, "data/bullet_4.png");
+    bulletTexture5 = IMG_LoadTexture(renderer, "data/bullet_5.png");
 
-
+    //  加载补给纹理
+    dropTexture1 = IMG_LoadTexture(renderer, "data/dropTexture1.png");
+    dropTexture2 = IMG_LoadTexture(renderer, "data/dropTexture2.png");
+    dropTexture3 = IMG_LoadTexture(renderer, "data/dropTexture3.png");
 
     // 加载爆炸特效纹理
     for (int i = 1; i <= 7; ++i) {
@@ -159,20 +107,13 @@ bool sdlGame::initSDL() {
         bombTextures.push_back(texture);
     }
     }
-
-    keyboardTextureSelected = IMG_LoadTexture(renderer, "data/k2.png");
-    keyboardTextureUnselected = IMG_LoadTexture(renderer, "data/k1.png");
-    mouseTextureSelected = IMG_LoadTexture(renderer, "data/m2.png");
-    mouseTextureUnselected = IMG_LoadTexture(renderer, "data/m1.png");
     //font.ttf
     TTF_Init();
-
     pauseFont = TTF_OpenFont("data/font2.ttf", 64);
     scoreFont = TTF_OpenFont("data/font3.ttf", 24);
     gameOverFont = TTF_OpenFont("data/font2.ttf", 80); // 24是字体大小，可以根据需要更改
-    titleFont = TTF_OpenFont("data/fontTitle.ttf", 48);
+    titleFont = TTF_OpenFont("data/fontTitle.ttf", 64);
     menuFont = TTF_OpenFont("data/fontMenu.ttf", 36);
-
     //BackGroundMusic
     // Handle the error
     if (SDL_Init(SDL_INIT_AUDIO) < 0) {
@@ -184,33 +125,36 @@ bool sdlGame::initSDL() {
     std::cerr << "Failed to initialize SDL_mixer: " << Mix_GetError() << std::endl;
     return -1;
     }   
-
     menuMusic = Mix_LoadMUS("data/menu_music.mp3");
     gameMusic = Mix_LoadMUS("data/game_play_music.mp3");
     bombSound = Mix_LoadWAV("data/sound.wav");
-    if (!bombSound) {
-        std::cerr << "Error loading bomb sound: " << Mix_GetError() << std::endl;
-        // Handle the error
-    }
-
     isMusicPaused = Mix_PlayingMusic() == 1; //pour le menu_pause
-
-
     return true;
 }
 
 void sdlGame::cleanUpSDL() {
     // Add clean up code for SDL_image, SDL_ttf, and SDL_mixer here
+    
     SDL_DestroyTexture(bg_texture1_easy);
     SDL_DestroyTexture(bg_texture1_hard);
     SDL_DestroyTexture(bg_texture1_normal);
     SDL_DestroyTexture(bg_texture2_easy);
     SDL_DestroyTexture(bg_texture2_hard);
     SDL_DestroyTexture(bg_texture2_normal);
-
-    SDL_DestroyTexture(bulletTexture);
-
+    SDL_DestroyTexture(bulletTexture1);
+    SDL_DestroyTexture(bulletTexture2);
+    SDL_DestroyTexture(bulletTexture3);
     SDL_DestroyTexture(enemyTexture);
+    SDL_DestroyTexture(startGameTexture);
+    SDL_DestroyTexture(controlsTexture);
+    SDL_DestroyTexture(levelTexture);
+    SDL_DestroyTexture(storeTexture);
+    SDL_DestroyTexture(normalTexture);
+    SDL_DestroyTexture(easyTexture);
+    SDL_DestroyTexture(hardTexture);
+    SDL_DestroyTexture(dropTexture1);
+    SDL_DestroyTexture(dropTexture2);
+    SDL_DestroyTexture(dropTexture3);
 
     // 释放爆炸特效纹理
     for (auto& texture : bombTextures) {
@@ -222,44 +166,21 @@ void sdlGame::cleanUpSDL() {
     bombTextures.clear();
 
     // Menu
-    SDL_DestroyTexture(titleTexture);
-    SDL_DestroyTexture(startGameTextureSelected);
-    SDL_DestroyTexture(startGameTextureUnselected);
-
-    SDL_DestroyTexture(keyboardTextureSelected);
-    SDL_DestroyTexture(keyboardTextureUnselected);
-    SDL_DestroyTexture(mouseTextureSelected);
-    SDL_DestroyTexture(mouseTextureUnselected);
     SDL_DestroyTexture(mainMenuBackgroundTexture);
+    SDL_DestroyTexture(texture);
 
-    SDL_DestroyTexture(levelTextureSelected);
-    SDL_DestroyTexture(levelTextureUnselected);
-    SDL_DestroyTexture(easyTextureSelected);
-    SDL_DestroyTexture(easyTextureUnselected);
-    SDL_DestroyTexture(normalTextureSelected);
-    SDL_DestroyTexture(normalTextureUnselected);
-    SDL_DestroyTexture(hardTextureSelected);
-    SDL_DestroyTexture(hardTextureUnselected);
-
-    if (controlsTextureSelected != nullptr) {
-    SDL_DestroyTexture(controlsTextureSelected);
-    }
-    if (controlsTextureUnselected != nullptr) {
-        SDL_DestroyTexture(controlsTextureUnselected);
-    }
-    if (texture != nullptr) {
-        SDL_DestroyTexture(texture);
-    }
-
-    if (gameOverFont||pauseFont||scoreFont) {
+    if (gameOverFont||pauseFont||scoreFont||titleFont||menuFont) {
         TTF_CloseFont(pauseFont);
         TTF_CloseFont(scoreFont);
         TTF_CloseFont(gameOverFont);
+        TTF_CloseFont(titleFont);
+        TTF_CloseFont(menuFont);
         pauseFont = nullptr;
         scoreFont = nullptr;
         gameOverFont = nullptr;
-    }
-    
+        titleFont = nullptr;
+        menuFont = nullptr;
+    };
 
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -287,13 +208,10 @@ void sdlGame::cleanUpSDL() {
 }
 
 void sdlGame::run() {
-    Uint32 gameTime;
     Uint32 lastFrameTime = SDL_GetTicks();
 
     while (isRunning) {
         handleEvents();
-        gameTime = SDL_GetTicks() - lastFrameTime;
-
         // 添加用于更新自定义计时器的代码
         Uint32 currentFrameTime = SDL_GetTicks();
         Uint32 deltaTime = currentFrameTime - lastFrameTime;
@@ -311,8 +229,6 @@ void sdlGame::run() {
         SDL_Delay(1000 / 60); // Limit the frame rate to 60 FPS
     }
 }
-
-
 
 
 void sdlGame::playMusic(Mix_Music* music) {
@@ -334,7 +250,11 @@ void sdlGame::resumeMusic() {
 void sdlGame::updateMusic() {
     Mix_Music* targetMusic = nullptr;
     
-    if (game.currentState == Game::GameState::MainMenu) {
+    if (game.currentState == Game::GameState::MainMenu
+        ||game.currentState == Game::GameState::Level
+        ||game.currentState == Game::GameState::ControlMenu
+        ||game.currentState == Game::GameState::Store) 
+    {
         targetMusic = menuMusic;
     } else if (game.currentState == Game::GameState::Running) {
         targetMusic = gameMusic;
@@ -353,10 +273,12 @@ void sdlGame::updateMusic() {
     }
 }
 
-
-
-
-    
+SDL_Texture* sdlGame::renderText(const std::string &text, TTF_Font* font, SDL_Color color) {
+    SDL_Surface* surface = TTF_RenderText_Solid(font, text.c_str(), color);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+    return texture;
+} 
 
 void sdlGame::handleEvents() {
     SDL_Event event;
@@ -389,6 +311,10 @@ void sdlGame::handleEvents() {
                 handlePausedEvents(event);
                 break;
 
+            case Game::GameState::Store:
+                handleStoreEvents(event);
+                break;
+
             case Game::GameState::GameOver: // 添加此 case 以处理 GameOver 状态的事件
                 handleGameOverEvents(event, SDL_GetTicks());
                 break;
@@ -399,9 +325,21 @@ void sdlGame::handleEvents() {
     }
 }
 
-
 void sdlGame::handleRunningEvents(SDL_Event &event) {
-    if (!game.useKeyboardControl) {
+    if (event.type == SDL_KEYDOWN) {
+        switch (event.key.keysym.scancode) {
+            case SDL_SCANCODE_ESCAPE: // 处理 ESC 键事件
+                game.save();
+                game.setCurrentState(Game::GameState::MainMenu);
+                break;
+            case SDL_SCANCODE_Q: // 处理 Q 键事件
+                isRunning = false;
+                break;
+            default:
+                break;
+        }
+    }
+    if (!game.useMouseControl) {
         if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.scancode) {
                 case SDL_SCANCODE_UP: 
@@ -426,31 +364,21 @@ void sdlGame::handleRunningEvents(SDL_Event &event) {
                 case SDL_SCANCODE_P:
                     game.runningInput('p');
                     break;
-
-                case SDL_SCANCODE_ESCAPE: // 添加此 case 以处理 ESC 键事件
-                    game.save();
-                    game.setCurrentState(Game::GameState::MainMenu);
-                    break;
-                case SDL_SCANCODE_Q: // 添加此 case 以处理 q 键事件
-                    isRunning = false;
-                    break;
-
                 default:
                     break;
             }
         }
-    } else if (game.useKeyboardControl && (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEMOTION)) {
+    } else if (game.useMouseControl && (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEMOTION)) {
         if (event.button.button == SDL_BUTTON_LEFT || event.type == SDL_MOUSEMOTION) {
             int mouseX, mouseY;
             SDL_GetMouseState(&mouseX, &mouseY);
-            game.getPlayer().setX(mouseX - 25); // 假设飞机宽度为 50
-            game.getPlayer().setY(mouseY - 25); // 假设飞机高度为 50
+            game.getPlayer().setX(mouseX - 25); 
+            game.getPlayer().setY(mouseY - 25); 
         }
     }if (event.type == SDL_QUIT) {
         isRunning = false;
     }
 }
-
 
 void sdlGame::handleGameOverEvents(SDL_Event &event, Uint32 gameTime) {
     if (event.type == SDL_KEYDOWN) {
@@ -490,9 +418,6 @@ void sdlGame::handlePausedEvents(SDL_Event &event) {
     }
 }
 
-
-
-
 void sdlGame::handleMainMenuEvents(SDL_Event& event) {
     if (event.type == SDL_KEYDOWN) {
         switch (event.key.keysym.scancode) {
@@ -508,7 +433,8 @@ void sdlGame::handleMainMenuEvents(SDL_Event& event) {
                     game.menuInput('\r');
                     break;
                 case SDL_SCANCODE_Q:
-                    isRunning = false;
+                    game.menuInput('q');
+                    isRunning=false;
                     break;
 
                 default:
@@ -516,7 +442,6 @@ void sdlGame::handleMainMenuEvents(SDL_Event& event) {
     }
 }
 }
-
 
 void sdlGame::handleLevelMenuEvents(const SDL_Event& event) {
     if (event.type == SDL_KEYDOWN) {
@@ -548,6 +473,34 @@ void sdlGame::handleLevelMenuEvents(const SDL_Event& event) {
 
 }
 
+void sdlGame::handleStoreEvents(const SDL_Event& event) {
+    if (event.type == SDL_KEYDOWN) {
+        switch (event.key.keysym.scancode) {
+            case SDL_SCANCODE_UP: 
+                game.storeInput('w');
+                break;
+
+            case SDL_SCANCODE_DOWN:
+                game.storeInput('s');
+                break;
+
+            case SDL_SCANCODE_RETURN:
+                game.storeInput('\r');
+                break;
+
+            case SDL_SCANCODE_ESCAPE:
+                game.setCurrentState(Game::GameState::MainMenu);
+                break;
+
+            case SDL_SCANCODE_Q:
+                isRunning = false;
+                break;
+
+            default:
+                break;
+        }
+    }
+}
 
 void sdlGame::handleControlMenuEvents(SDL_Event &event) {
     if (event.type == SDL_KEYDOWN) {
@@ -578,8 +531,6 @@ void sdlGame::handleControlMenuEvents(SDL_Event &event) {
     }
 
 }
-
-
 
 void sdlGame::renderScore() {
     int playerScore = game.getScoreManager().getPlayerScore();
@@ -612,7 +563,6 @@ void sdlGame::renderScore() {
     SDL_DestroyTexture(scoreTexture);
 }
 
-
 void sdlGame::renderPausedScore() {
     int playerScore = game.getScoreManager().getPlayerScore();
 
@@ -643,7 +593,6 @@ void sdlGame::renderPausedScore() {
     SDL_FreeSurface(scoreSurface);
     SDL_DestroyTexture(scoreTexture);
 }
-
 
 void sdlGame::renderPausedScreen() {
     // 使用先前渲染的画面作为背景
@@ -677,8 +626,6 @@ void sdlGame::renderPausedScreen() {
     SDL_FreeSurface(textSurface);
 }
 
-
-
 void sdlGame::renderTexture(SDL_Texture* texture, SDL_Renderer* renderer, int x, int y) {
     // 创建目标矩形，用于设置纹理渲染的位置和大小
     SDL_Rect dstRect;
@@ -690,25 +637,12 @@ void sdlGame::renderTexture(SDL_Texture* texture, SDL_Renderer* renderer, int x,
     SDL_RenderCopy(renderer, texture, nullptr, &dstRect);
 }
 
-
 void sdlGame::renderMainMenu() {
     int windowWidth = 512;
     int windowHeight = 768;
-    if (renderer == nullptr) {
-        // 渲染器创建失败，输出错误信息
-        cout << "Failed to create renderer: " << SDL_GetError() << endl;
-        return;
-    }
-
     // Clear the screen
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-
-    int titleWidth, titleHeight;
-    SDL_QueryTexture(titleTexture, nullptr, nullptr, &titleWidth, &titleHeight);
-    int titleX = (windowWidth - titleWidth) / 2;
-    int titleY = windowHeight / 4 - titleHeight / 2;
-
     // Render main menu background
     SDL_Rect srcRect = {0, 0, windowWidth, windowHeight};
     SDL_Rect destRect = {0, 0, windowWidth, windowHeight};
@@ -716,43 +650,43 @@ void sdlGame::renderMainMenu() {
 
 
     // 渲染标题
-    renderTexture(titleTexture, renderer, titleX, titleY);
+    SDL_Color whiteColor = {255, 255, 255, 255};
+    SDL_Color blackColor = {0, 0, 0, 255};
+    SDL_Texture* titleText = renderText("DogFighter", titleFont, whiteColor);
+    int titleTextWidth, titleTextHeight;
+    SDL_QueryTexture(titleText, nullptr, nullptr, &titleTextWidth, &titleTextHeight);
+    renderTexture(titleText, renderer, (windowWidth - titleTextWidth) / 2, windowHeight / 4 - titleTextHeight / 2);
+    SDL_DestroyTexture(titleText);
+
 
     int positionX = windowWidth / 4 ;
     int positionY = 3 * windowHeight / 4 - 120;
 
     // 渲染 "Start Game" 菜单项
-    if (game.menuSelection == 0) {
-        renderTexture(startGameTextureSelected, renderer, positionX, positionY);
-    } else {
-        renderTexture(startGameTextureUnselected, renderer, positionX, positionY);
-    }
+    startGameTexture = renderText("Start Game", menuFont, game.menuSelection == 0 ? whiteColor : blackColor);
+    renderTexture(startGameTexture, renderer, positionX, positionY);
+
+
 
     // 渲染 "Controls" 菜单项
-    if (game.menuSelection  == 1) {
-        renderTexture(controlsTextureSelected, renderer, positionX, positionY + 50);
-    } else {
-        renderTexture(controlsTextureUnselected, renderer, positionX, positionY + 50);
-    }
+    controlsTexture = renderText("Control", menuFont, game.menuSelection == 1 ? whiteColor : blackColor);
+    renderTexture(controlsTexture, renderer, positionX, positionY + 60);
+
 
     // 渲染 "Level" 菜单项
-    if (game.menuSelection  == 2) {
-        renderTexture(levelTextureSelected, renderer, positionX, positionY + 110);
-    } else {
-        renderTexture(levelTextureUnselected, renderer, positionX, positionY + 110);
-    }
+    levelTexture = renderText("Level", menuFont, game.menuSelection == 2 ? whiteColor : blackColor);
+    renderTexture(levelTexture, renderer, positionX, positionY + 120);
+    
 
+    // 渲染 "Store" 菜单项
+    storeTexture = renderText("Store", menuFont, game.menuSelection == 3 ? whiteColor : blackColor);
+    renderTexture(storeTexture, renderer, positionX, positionY + 180);
 
 }
 
 void sdlGame::renderLevelMenu(){
     int windowWidth = 512;
     int windowHeight = 768;
-    if (renderer == nullptr) {
-        // 渲染器创建失败，输出错误信息
-        cout << "Failed to create renderer: " << SDL_GetError() << endl;
-        return;
-    }
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
@@ -765,29 +699,25 @@ void sdlGame::renderLevelMenu(){
     int positionX = windowWidth / 2 - 100 ;
     int positionY = windowHeight;
 
-    // 渲染 "Easy" 菜单项
-    if (game.levelMenuSelection == 0) {
-        renderTexture(easyTextureSelected, renderer, positionX, positionY / 4);
-    } else {
-        renderTexture(easyTextureUnselected, renderer, positionX, positionY / 4);
-    }
+    SDL_Color whiteColor = {255, 255, 255, 255};
+    SDL_Color blackColor = {0, 0, 0, 255};
+
+
+// 渲染 "Easy" 菜单项
+    easyTexture = renderText("Easy", menuFont, game.levelMenuSelection == 0 ? whiteColor : blackColor);
+    renderTexture(easyTexture, renderer, positionX, positionY / 4);
+    
 
     // 渲染 "Normal" 菜单项
-    if (game.levelMenuSelection == 1) {
-        renderTexture(normalTextureSelected, renderer, positionX, positionY / 2);
-    } else {
-        renderTexture(normalTextureUnselected, renderer, positionX, positionY / 2);
-    }
+    normalTexture = renderText("Normal", menuFont, game.levelMenuSelection == 1 ? whiteColor : blackColor);
+    renderTexture(normalTexture, renderer, positionX, positionY / 2);
+    
 
     // 渲染 "Hard" 菜单项
-    if (game.levelMenuSelection == 2) {
-        renderTexture(hardTextureSelected, renderer, positionX,  3 * positionY / 4);
-    } else {
-        renderTexture(hardTextureUnselected, renderer, positionX,  3 * positionY / 4);
-    }
+    hardTexture = renderText("Hard", menuFont, game.levelMenuSelection == 2 ? whiteColor : blackColor);
+    renderTexture(hardTexture, renderer, positionX, 3 * positionY / 4);
 
 };
-
 
 void sdlGame::renderControlMenu() {
 
@@ -795,62 +725,81 @@ void sdlGame::renderControlMenu() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-
      // Render main menu background
     SDL_Rect srcRect = {0, 0, windowWidth, windowHeight};
     SDL_Rect destRect = {0, 0, windowWidth, windowHeight};
     SDL_RenderCopy(renderer, mainMenuBackgroundTexture, &srcRect, &destRect);
+
+    SDL_Color whiteColor = {255, 255, 255, 255};
+    SDL_Color blackColor = {0, 0, 0, 255};
 
     // 渲染 "Keyboard" 选项
-    if (game.controlSelection == 0) {
-        renderTexture(keyboardTextureSelected, renderer, 100, 100);
-    } else {
-        renderTexture(keyboardTextureUnselected, renderer, 100, 100);
-    }
+    keyboardTexture = renderText("Keyboard", menuFont, game.controlSelection == 0 ? whiteColor : blackColor);
+    renderTexture(keyboardTexture, renderer, 100, 100);
+
 
     // 渲染 "Mouse" 选项
-    if (game.controlSelection == 1) {
-        renderTexture(mouseTextureSelected, renderer, 100, 200);
-    } else {
-        renderTexture(mouseTextureUnselected, renderer, 100, 200);
-    }
+    mouseTexture = renderText("Mouse", menuFont, game.controlSelection == 1 ? whiteColor : blackColor);
+    renderTexture(mouseTexture, renderer, 100, 200);
+
+    SDL_DestroyTexture(keyboardTexture);
+    SDL_DestroyTexture(mouseTexture);
 }
 
 
-
-void sdlGame::renderKeyboardControlMenu() {
-    if (renderer == nullptr) {
-        // 渲染器创建失败，输出错误信息
-        cout << "Failed to create renderer: " << SDL_GetError() << endl;
-        return;
-    }
+void sdlGame::renderStore() {
+    int windowWidth = 512;
+    int windowHeight = 768;
 
     // Clear the screen
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-     // Render main menu background
+    // Render store background, similar to the main menu background rendering
     SDL_Rect srcRect = {0, 0, windowWidth, windowHeight};
     SDL_Rect destRect = {0, 0, windowWidth, windowHeight};
     SDL_RenderCopy(renderer, mainMenuBackgroundTexture, &srcRect, &destRect);
 
-    // 在这里渲染键盘控制子菜单的内容
+    // Render store title
+    SDL_Color whiteColor = {255, 255, 255, 255};
+    SDL_Color blackColor = {0, 0, 0, 255};
+    SDL_Texture* storeTitleText = renderText("Store", titleFont, whiteColor);
+    int titleWidth, titleHeight;
+    SDL_QueryTexture(storeTitleText, nullptr, nullptr, &titleWidth, &titleHeight);
+    int titleX = (windowWidth - titleWidth) / 2;
+    int titleY = windowHeight / 4 - titleHeight / 2;
+    renderTexture(storeTitleText, renderer, titleX, titleY);
+    SDL_DestroyTexture(storeTitleText);  // 添加此行以销毁纹理
+    std::vector<std::string> weaponNames = {"Weapon Level 2", "Weapon Level 3", "Weapon Level 4", "Weapon Level 5"};
 
-}
+    int menuItemX = windowWidth / 2;
+    int menuItemY = windowHeight / 2;
 
-void sdlGame::renderMouseControlMenu() {
-    if (renderer == nullptr) {
-        // 渲染器创建失败，输出错误信息
-        cout << "Failed to create renderer: " << SDL_GetError() << endl;
-        return;
+    for (size_t i = 0; i < weaponNames.size(); ++i) {
+        SDL_Color textColor = (i == game.storeMenuSelection) ? whiteColor : blackColor;
+        SDL_Texture* menuItemText = renderText(weaponNames[i], menuFont, textColor);
+
+        int itemWidth, itemHeight;
+        SDL_QueryTexture(menuItemText, nullptr, nullptr, &itemWidth, &itemHeight);
+
+        int itemY = menuItemY + i * (itemHeight + 10);
+        renderTexture(menuItemText, renderer, menuItemX - itemWidth / 2, itemY);
+        SDL_DestroyTexture(menuItemText);  // 添加此行以销毁纹理
     }
-
-    // Clear the screen
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-    // 在这里渲染鼠标控制子菜单的内容
+    std::string scoreText = "Score: " + std::to_string(game.getScoreManager().getPlayerScore());
+    SDL_Texture* scoreTexture = renderText(scoreText, menuFont, whiteColor);
+    int scoreWidth, scoreHeight;
+    SDL_QueryTexture(scoreTexture, nullptr, nullptr, &scoreWidth, &scoreHeight);
+    int scoreX = 10;
+    int scoreY = windowHeight - scoreHeight - 10;
+    renderTexture(scoreTexture, renderer, scoreX, scoreY);
+    SDL_DestroyTexture(scoreTexture);  // 添加此行以销毁纹理
 
 }
+
+
+
+
 
 void sdlGame::renderGameOver() {
 
@@ -862,7 +811,7 @@ void sdlGame::renderGameOver() {
     SDL_RenderCopy(renderer, textTexture, nullptr, &textRect);
 
     SDL_FreeSurface(textSurface);
-    SDL_DestroyTexture(textTexture);
+
 
     // 渲染玩家分数
     std::string scoreText = "YOUR SCORES: " + std::to_string(game.getScoreManager().getPlayerScore());
@@ -878,7 +827,7 @@ void sdlGame::renderGameOver() {
     SDL_RenderCopy(renderer, scoreTexture, nullptr, &scoreRect);
 
     SDL_FreeSurface(scoreSurface);
-    SDL_DestroyTexture(scoreTexture);
+
 };
 
 SDL_Rect sdlGame::MyRect_to_SDLRect(const Rect::My_Rect* rect) {
@@ -905,12 +854,6 @@ void sdlGame::render() {
         case Game::GameState::ControlMenu:
             renderControlMenu();
             break;
-        case Game::GameState::MouseControl:
-            renderMouseControlMenu();
-            break;
-        case Game::GameState::KeyboardControl:
-            renderKeyboardControlMenu();
-            break;
         case Game::GameState::Pause:
             renderPausedScreen();
             break;
@@ -919,6 +862,9 @@ void sdlGame::render() {
             break;
         case Game::GameState::GameOver:
             renderGameOver();
+            break;
+        case Game::GameState::Store:
+            renderStore();
             break;
         default:
             break;
@@ -972,8 +918,34 @@ switch (game.currentLevel) {
         SDL_Rect dstRect;
         dstRect.x = bullet.getX();
         dstRect.y = bullet.getY();
-        SDL_QueryTexture(bulletTexture, nullptr, nullptr, &dstRect.w, &dstRect.h);
-        SDL_RenderCopy(renderer, bulletTexture, nullptr, &dstRect);
+        Bullet::BulletTrajectory weaponType = game.getTrajectory(); // 调用 getWeaponType 方法
+        switch (weaponType)
+        {
+        case Bullet::BulletTrajectory::Weapon1:
+            SDL_QueryTexture(bulletTexture1, nullptr, nullptr, &dstRect.w, &dstRect.h);
+            SDL_RenderCopy(renderer, bulletTexture1 , nullptr, &dstRect);
+            break;
+        case Bullet::BulletTrajectory::Weapon2:
+            SDL_QueryTexture(bulletTexture2, nullptr, nullptr, &dstRect.w, &dstRect.h);
+            SDL_RenderCopy(renderer, bulletTexture2 , nullptr, &dstRect);
+            break;
+        case Bullet::BulletTrajectory::Weapon3:
+            SDL_QueryTexture(bulletTexture3, nullptr, nullptr, &dstRect.w, &dstRect.h);
+            SDL_RenderCopy(renderer, bulletTexture3 , nullptr, &dstRect);
+            break;
+        case Bullet::BulletTrajectory::Weapon4:
+            SDL_QueryTexture(bulletTexture4, nullptr, nullptr, &dstRect.w, &dstRect.h);
+            SDL_RenderCopy(renderer, bulletTexture4 , nullptr, &dstRect);
+            break;
+        case Bullet::BulletTrajectory::Weapon5:
+            SDL_QueryTexture(bulletTexture5, nullptr, nullptr, &dstRect.w, &dstRect.h);
+            SDL_RenderCopy(renderer, bulletTexture5 , nullptr, &dstRect);
+            break;
+        default:
+            break;
+        }
+
+        
         }
     }
 
@@ -990,8 +962,7 @@ switch (game.currentLevel) {
             SDL_RenderCopy(renderer, enemyTexture, nullptr, &destRect);
             }
         }
-    renderScore();
-    
+    renderScore(); 
     // 渲染爆炸特效
         for (const auto& bomb : game.getBombs()) {
             if (bomb.getState() == Bomb::BombState::Active) {
@@ -1003,25 +974,28 @@ switch (game.currentLevel) {
         }
 
     //渲染补给道具
-    for(const auto& drop : game.getDrops()){
-        if(drop.isActive())
-        {
-            SDL_Rect dropRect;
-            dropRect.x = drop.getX();
-            dropRect.y = drop.getY();
-            dropRect.w = 20; // Set the width of the drop rectangle
-            dropRect.h = 20;
+    for (const Drop &drop : game.getDrops()) {
+        if(drop.isActive()){
+            SDL_Rect dstRect;
+            dstRect.x = drop.getX();
+            dstRect.y = drop.getY();
+            dstRect.w = 20;
+            dstRect.h = 20;
 
-            if(drop.getType() == Drop::DropType::Bonus){
-                SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Green
+            SDL_Texture* currentDropTexture;
+
+            if (drop.getType() == Drop::DropType::Bonus) {
+                currentDropTexture = dropTexture1;
+            } else if (drop.getType() == Drop::DropType::FireRateBoost) {
+                currentDropTexture = dropTexture2;
+            } else if (drop.getType() == Drop::DropType::SpeedBoost) {
+                currentDropTexture = dropTexture3;
             } else {
-                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red
+                continue; // 如果找不到匹配的类型，跳过渲染
             }
 
-            // Render the colored rectangle
-            SDL_RenderFillRect(renderer, &dropRect);
-
-        }
+            SDL_RenderCopy(renderer, currentDropTexture, nullptr, &dstRect);
+        
     }
     }
-
+}

@@ -1,7 +1,11 @@
+/**
+ * @file Map.cpp
+ * @brief Fichier de code source pour la classe Map
+ */
 #include "Map.h"
 
 Map::Map()
-    : width_(512), height_(768), map1_posY(-768), map2_posY(0), scroll_speed(3) {
+    : width_(512), height_(768), map1_posY(-768), map2_posY(0) {
 }
 
 void Map::mapPosition(int scroll_speed) {

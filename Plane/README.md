@@ -27,7 +27,7 @@ Il peut se compiler sous Linux/ MacOS et Windows (avec WSL notamment) , avec la 
  - Puis, depuis le dossier racine du jeu, exécutez la commande : `make`
  - Une fois la compilation terminée, exécutez la commande `./bin/Debug/Plane` pour lancer du jeu
 
-- Remarque : Sous linux, l'instruction `CXX=clang++` dans le Makefile
+- Remarque : Sous macOS, l'instruction `CXX=clang++` dans le Makefile
 
  ### Sous Windows avec Visual Studio
 

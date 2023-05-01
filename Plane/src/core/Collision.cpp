@@ -1,4 +1,7 @@
-// Collision.cpp
+/**
+ * @file Collision.cpp
+ * @brief Fichier de code source pour la fonctions logiques de détection de collision
+ */
 #include "Collision.h"
 
 bool Rect::hasIntersection(const My_Rect * A, const My_Rect * B) {

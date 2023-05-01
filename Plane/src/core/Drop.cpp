@@ -1,3 +1,7 @@
+/**
+ * @file Drop.cpp
+ * @brief Fichier de code source pour la classe Drop
+ */
 #include "Drop.h"
 
 Drop::Drop(int x, int y, int speed, DropType type)

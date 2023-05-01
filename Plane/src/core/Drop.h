@@ -25,11 +25,12 @@ private:
 
 public:
     /**
-     * @brief Énumération des types d'objets qui tombent.
+     * @brief Énumération des différents types de bonus.
      */
     enum class DropType {
-        Bonus,  /**< Objet avec un effet positif. */
-        Malus   /**< Objet avec un effet négatif. */
+        Bonus,         /**< Objet avec un effet positif. */
+        SpeedBoost,    /**< Augmentation de la vitesse. */
+        FireRateBoost  /**< Augmentation de la cadence de tir. */
     };
 
     DropType type;  /**< Le type de l'objet qui tombe. */

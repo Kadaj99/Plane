@@ -1,3 +1,7 @@
+/**
+ * @file Player.cpp
+ * @brief Fichier de code source pour la classe Player
+ */
 #include "Player.h"
 
 Player::Player(int windowWidth, int windowHeight)
@@ -5,6 +9,14 @@ Player::Player(int windowWidth, int windowHeight)
        playerWidth(30), playerHeight(30) {
     x = windowWidth / 2;
     y = windowHeight - 50; // 假设玩家对象的高度约为 50
+}
+
+int Player::getSpeed() const {
+    return speed;
+}
+
+void Player::setSpeed(int newSpeed) {
+    speed = newSpeed;
 }
 
 void Player::moveLeft() {
@@ -28,6 +40,7 @@ void Player::moveUp() {
         y = 0;
     }
 }
+
 
 void Player::moveDown() {
     y += speed;

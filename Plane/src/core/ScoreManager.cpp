@@ -1,3 +1,7 @@
+/**
+ * @file ScoreManager.cpp
+ * @brief Fichier de code source pour la classe ScoreManager
+ */
 #include "ScoreManager.h"
 
 ScoreManager::ScoreManager() : playerScore(0), highScore(0), totalScore(0) { // 初始化 totalScore 为 0
@@ -25,7 +29,7 @@ void ScoreManager::setHighScore(int score) {
 }
 
 void ScoreManager::loadScore() {
-    std::ifstream scoreFile("./records.txt");
+    std::ifstream scoreFile("src/txt/records.txt");
 
     if (!scoreFile) {
         std::cerr << "Error opening scores.txt for reading" << std::endl;
@@ -39,7 +43,7 @@ void ScoreManager::loadScore() {
 }
 
 void ScoreManager::saveScore() {
-    std::ofstream scoreFile("./scores.txt");
+    std::ofstream scoreFile("src/txt/scores.txt");
 
     if (!scoreFile) {
         std::cerr << "Error opening scores.txt for writing" << std::endl;
@@ -57,7 +61,7 @@ void ScoreManager::saveScore() {
 }
 
 void ScoreManager::recordGame(int score, float gameTime) {
-    std::ofstream recordFile("./records.txt", std::ios::app);
+    std::ofstream recordFile("/src/txt/records.txt", std::ios::app);
 
     if (!recordFile) {
         std::cerr << "Error opening records.txt for writing" << std::endl;

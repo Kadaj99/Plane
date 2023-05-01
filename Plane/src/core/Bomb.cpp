@@ -1,4 +1,7 @@
-// Bomb.cpp
+/**
+ * @file Bomb.cpp
+ * @brief Fichier de code source pour la classe Bomb
+ */
 #include "Bomb.h"
 
 

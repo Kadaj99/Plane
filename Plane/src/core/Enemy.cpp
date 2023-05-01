@@ -1,8 +1,12 @@
+/**
+ * @file Enemy.cpp
+ * @brief Fichier de code source pour la classe Enemy
+ */
 #include "Enemy.h"
 
 Enemy::Enemy(int x, int y, int interval, int speed)
-    : x(x), y(y), interval(interval), speed(speed), state(EnemyState::Active),
-      enemyWidth(20), enemyHeight(20) 
+    : x(x), y(y), interval(interval), speed(speed),
+      enemyWidth(20), enemyHeight(20), state(EnemyState::Active)
 {}
 
 Enemy::Enemy()

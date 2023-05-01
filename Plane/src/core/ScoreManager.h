@@ -1,6 +1,6 @@
 /**
  * @file ScoreManager.h
- * @brief Definition of the ScoreManager class representing a score manager object.
+ * @brief Définition de la classe ScoreManager représentant un gestionnaire de score.
  */
 
 #ifndef SCOREMANAGER_H
@@ -11,80 +11,80 @@
 
 /**
  * @class ScoreManager
- * @brief A class representing a score manager object.
+ * @brief Classe représentant un gestionnaire de score.
  */
 class ScoreManager {
 private:
-    int playerScore;        /**< The current player score. */
-    int highScore;          /**< The current high score. */
-    int totalScore;         /**< The total score. */
+    int playerScore;        /**< Le score actuel du joueur. */
+    int highScore;          /**< Le meilleur score actuel. */
+    int totalScore;         /**< Le score total. */
 
 public:
-    // Constructors and destructors
+    // Constructeurs et destructeurs
     /**
-     * @brief Construct a new ScoreManager object.
+     * @brief Construit un nouvel objet ScoreManager.
      */
     ScoreManager();
 
     /**
-     * @brief Destroy the ScoreManager object.
+     * @brief Détruit l'objet ScoreManager.
      */
     ~ScoreManager();
 
-    // Getter and setter functions
+    // Fonctions getter et setter
     /**
-     * @brief Get the current player score.
-     * @return The current player score.
+     * @brief Obtient le score actuel du joueur.
+     * @return Le score actuel du joueur.
      */
     int getPlayerScore() const;
 
     /**
-     * @brief Set the current player score.
-     * @param score The new player score.
+     * @brief Définit le score actuel du joueur.
+     * @param score Le nouveau score du joueur.
      */
     void setPlayerScore(int score);
 
     /**
-     * @brief Get the current high score.
-     * @return The current high score.
+     * @brief Obtient le meilleur score actuel.
+     * @return Le meilleur score actuel.
      */
     int getHighScore() const;
 
     /**
-     * @brief Set the current high score.
-     * @param score The new high score.
+     * @brief Définit le meilleur score actuel.
+     * @param score Le nouveau meilleur score.
      */
     void setHighScore(int score);
 
     /**
-     * @brief Get the total score.
-     * @return The total score.
+     * @brief Obtient le score total.
+     * @return Le score total.
      */
     int getTotalScore();
 
-    // Loading and saving score functions
+    // Fonctions de chargement et de sauvegarde des scores
     /**
-     * @brief Load the score from a file.
+     * @brief Charge le score depuis un fichier.
      */
     void loadScore();
 
     /**
-     * @brief Save the score to a file.
+     * @brief Sauvegarde le score dans un fichier.
      */
     void saveScore();
 
-    // Updating high score function
+    // Fonction de mise à jour du meilleur score
     /**
-     * @brief Update the high score.
-     * @param score The new score to compare with the current high score.
+     * @brief Met à jour le meilleur score.
+     * @param score Le nouveau score à comparer avec le meilleur score actuel.
      */
     void updateHighScore(int score);
 
-    // Recording game score and time function
+    // Fonction d'enregistrement du score et du temps de jeu
     /**
-     * @brief Record the game score and time.
-     * @param score The game score.
-     * @param gameTime The game time.
+     * @brief Enregistre le score et le temps de jeu.
+     * @param score Le score de la partie.
+     * @param gameTime Le temps de jeu.
      */
     void recordGame(int score, float gameTime);   
 };

@@ -7,7 +7,9 @@ OBJ_DIR = obj/Debug
 BIN_DIR = bin/Debug
 
 # Compiler settings
+#MacOS
 CXX = clang++
+#CXX = g++   sou Linux
 CXXFLAGS = -Wall -g -std=c++11 -fsanitize=address
 LDFLAGS = `sdl2-config --libs` -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer -fsanitize=address
 

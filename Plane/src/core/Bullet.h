@@ -15,14 +15,14 @@
 class Bullet {
 public:
     /**
-     * @brief Énumération des trajectoires possibles des balles.
+     * @brief Énumération des différentes trajectoires de balles.
      */
     enum class BulletTrajectory {
-        Weapon1,
-        Weapon2,
-        Weapon3,
-        Weapon4,
-        Weapon5
+        Weapon1, /**< Trajectoire de l'arme 1. */
+        Weapon2, /**< Trajectoire de l'arme 2. */
+        Weapon3, /**< Trajectoire de l'arme 3. */
+        Weapon4, /**< Trajectoire de l'arme 4. */
+        Weapon5  /**< Trajectoire de l'arme 5. */
     };
 
     /**
@@ -123,12 +123,6 @@ public:
      * @param newFireInterval Le nouvel intervalle de génération.
     */
     void setFireInterval(int newFireInterval);
-
-    /**
-     * @brief Récupère la trajectoire de la balle.
-     * @return La trajectoire de la balle.
-     */
-    int getTrajectory() const;
 
     /**
      * @brief Modifie la trajectoire de la balle.

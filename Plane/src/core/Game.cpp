@@ -1,3 +1,7 @@
+/**
+ * @file Game.cpp
+ * @brief Fichier de code source pour la classe Game
+ */
 #include "Game.h"
 
 Game::Game()
@@ -10,7 +14,8 @@ Game::Game(int windowWidth, int windowHeight)
       bullets(),
       enemies(),
       bombs(),
-      drops()
+      drops(),
+      store(scoreManager.getPlayerScore())
     {
     // 初始化子弹容器
     bullets.reserve(magazineSize);
@@ -23,11 +28,18 @@ Game::Game(int windowWidth, int windowHeight)
     currentLevel=LevelSelection::Normal;
     currentControlType=ControlType::Keyboard;
     currentTrajectory=Bullet::BulletTrajectory::Weapon1;
+    drops.reserve(maxEnemyCount);
     menuSelection=0;
     scroll_speed = 3;
     lastFireTime = 0;
     lastDropSpawnTime = 0;
-    useKeyboardControl = false;
+    useMouseControl = false;
+
+    weaponPrices[static_cast<int>(Bullet::BulletTrajectory::Weapon2)] = 50;
+    weaponPrices[static_cast<int>(Bullet::BulletTrajectory::Weapon3)] = 100;
+    weaponPrices[static_cast<int>(Bullet::BulletTrajectory::Weapon4)] = 200;
+    weaponPrices[static_cast<int>(Bullet::BulletTrajectory::Weapon5)] = 400;
+
 
 
     // 如果需要默认开启 autoFire，将其设置为 true
@@ -38,14 +50,22 @@ void Game::updateMyTimer(uint32_t deltaTime) {
     myTimer += deltaTime;
 }
 
+double Game::getFireInterval() const {
+    return fireInterval / 1000.0; // 将毫秒转换为秒
+}
+
+void Game::setFireInterval(double newFireInterval) {
+    fireInterval = static_cast<int>(newFireInterval * 1000); // 将秒转换为毫秒
+}
+
 
 void Game::menuInput(const char input){
       switch (input) {
         case 'w':
-            menuSelection = (menuSelection - 1 + 3) % 3;
+            menuSelection = (menuSelection - 1 + 4) % 4;
             break;
         case 's':
-            menuSelection = (menuSelection + 1) % 3;
+            menuSelection = (menuSelection + 1) % 4;
             break;
         case '\r':
             if (menuSelection == 0) {
@@ -54,8 +74,12 @@ void Game::menuInput(const char input){
                     currentState = GameState::ControlMenu;
                 } else if (menuSelection == 2) {
                     currentState = GameState::Level;
+                } else if (menuSelection == 3) {
+                    currentState = GameState::Store;
                 }
                 break;
+        case 'q':
+            saveScore();
       }
 };
 
@@ -78,7 +102,7 @@ void Game::runningInput(const char input){
             player.moveRight();
             break;
         case 'f':
-            Game::fireBullet(currentTrajectory);
+            fireSingleBullet(Bullet::BulletTrajectory::Weapon1);
             break;
         case 'p':
             currentState = GameState::Pause;
@@ -103,10 +127,10 @@ void Game::controlInput(const char input){
             break;
         case '\r': 
             if (controlSelection == 0) {
-                useKeyboardControl = true;
+                useMouseControl = false;
                 setControlType(Game::ControlType::Keyboard);   
             } else if (controlSelection == 1) {
-                useKeyboardControl = false;
+                useMouseControl = true;
                 setControlType(Game::ControlType::Mouse);
             }
             currentState = GameState::MainMenu;
@@ -137,8 +161,34 @@ void Game::levelInput(const char input){
             currentState = GameState::MainMenu;
             break;
 }
+};
+
+void Game::storeInput(const char input) {
+    switch (input) {
+        case 'w':
+            storeMenuSelection = (storeMenuSelection - 1 + 4) % 4;
+            break;
+        case 's':
+            storeMenuSelection = (storeMenuSelection + 1) % 4;
+            break;
+        case 'd':
+            break;
+        case '\r':
+            Bullet::BulletTrajectory selectedWeapon = static_cast<Bullet::BulletTrajectory>(storeMenuSelection + 1);
+            int cost = weaponPrices[static_cast<int>(selectedWeapon)];
+            Store::PurchaseState purchaseStatus = purchaseWeapon(selectedWeapon, cost, scoreManager);
+            if (purchaseStatus == Store::PurchaseState::Success) {
+                // 更新当前武器
+                currentTrajectory = selectedWeapon;
+
+            }
+            currentState = Game::GameState::MainMenu; // 返回商店菜单
+            // 你可以在这里根据 purchaseStatus 显示购买成功或失败的提示
+            break;
+    }
 }
-;
+
+
 void Game::checkCollisions() {
     for (auto& enemy : enemies) {
         if (enemy.getState() == Enemy::EnemyState::Active) {
@@ -157,7 +207,7 @@ void Game::checkCollisions() {
                         bombs.push_back(bomb);
 
                         // 增加玩家分数
-                        scoreManager.setPlayerScore(scoreManager.getPlayerScore() + 1);
+                        scoreManager.setPlayerScore(scoreManager.getPlayerScore() + 1000);
 
                         //播放音效
                         setBombSound(true);
@@ -183,23 +233,23 @@ void Game::checkCollisions() {
         {
             // 处理碰撞效果
             switch (drop.getType()) {
-            /*
-            case DropType::IncreaseAttackPower:
-                // 增加攻击力逻辑
-                break;
-            case DropType::HealthRecovery:
-                // 回复血量逻辑
-                break;
-            case DropType::DecreaseFireInterval:
-                // 减少子弹发射间隔逻辑
-                break;
-            */
             case Drop::DropType::Bonus:
                 scoreManager.setPlayerScore(scoreManager.getPlayerScore() + 1);
                 break;
 
-            case Drop::DropType::Malus:
-                scoreManager.setPlayerScore(scoreManager.getPlayerScore() - 1);
+case Drop::DropType::SpeedBoost:
+    if (player.getSpeed() < 15) {
+        player.setSpeed(player.getSpeed() + 1);
+        std::cout << "Speed Boost applied. New speed: " << player.getSpeed() << std::endl;
+    }
+    break;
+
+case Drop::DropType::FireRateBoost:
+    if (getFireInterval() > 0.2) {
+        setFireInterval(getFireInterval() - 0.05);
+        std::cout << "Fire Rate Boost applied. New fire interval: " << getFireInterval() << std::endl;
+    }
+    break;
 
             }
 
@@ -228,50 +278,38 @@ void Game::resetGameObjects() {
 
 }
 
-
-void Game::switchWeapon(int weaponLevel) {
-    switch (weaponLevel) {
-        case 2:
-            fireBullet(Bullet::BulletTrajectory::Weapon2);
-            break;
-        case 3:
-            fireBullet(Bullet::BulletTrajectory::Weapon3);
-            break;
-        case 4:
-            fireBullet(Bullet::BulletTrajectory::Weapon4);
-            break;
-        case 5:
-            fireBullet(Bullet::BulletTrajectory::Weapon5);
-            break;
-        default:
-            fireBullet(Bullet::BulletTrajectory::Weapon1);
-            break;
+Store::PurchaseState Game::purchaseWeapon(Bullet::BulletTrajectory weapon, int cost, ScoreManager &scoreManager) {
+    int playerScore = scoreManager.getPlayerScore();
+    if (playerScore >= cost) {
+        scoreManager.setPlayerScore(playerScore - cost);
+        return Store::PurchaseState::Success;
     }
+    return Store::PurchaseState::Failure;
 }
+
 
 
 void Game::fireBullet(Bullet::BulletTrajectory trajectory) {
-    switch (trajectory) {
+    switch (currentTrajectory) {
         case Bullet::BulletTrajectory::Weapon2:
-            fireEnhance(trajectory, 2);
+            fireMultipleBullets(trajectory, 2);
             break;
         case Bullet::BulletTrajectory::Weapon3:
-            fireEnhance(trajectory, 3);
+            fireMultipleBullets(trajectory, 3);
             break;
         case Bullet::BulletTrajectory::Weapon4:
-            fireEnhance(trajectory, 4);
+            fireMultipleBullets(trajectory, 4);
             break;
         case Bullet::BulletTrajectory::Weapon5:
-            fireEnhance(trajectory, 5);
+            fireMultipleBullets(trajectory, 6);
             break;
         default:
-            fireDefault(trajectory);
+            fireSingleBullet(trajectory);
             break;
     }
 }
 
-
-void Game::fireDefault(Bullet::BulletTrajectory trajectory) {
+void Game::fireSingleBullet(Bullet::BulletTrajectory trajectory) {
     int playerX = player.getX();
     int playerY = player.getY();
     // 查找一个未激活的子弹
@@ -296,13 +334,11 @@ void Game::fireDefault(Bullet::BulletTrajectory trajectory) {
         inactiveBullet->setY(initialBulletY);    
         inactiveBullet->setSpeedX(0);
         inactiveBullet->setSpeedY(-bulletSpeed);
-        inactiveBullet->setTrajectory(Bullet::BulletTrajectory::Weapon1);
+        inactiveBullet->setTrajectory(trajectory);
     }
-    
 };
 
-
-void Game::fireEnhance(Bullet::BulletTrajectory trajectory, int bulletCount) {
+void Game::fireMultipleBullets(Bullet::BulletTrajectory trajectory, int bulletCount) {
     int playerX = player.getX();
     int playerY = player.getY();
     float angleIncrement;
@@ -327,7 +363,6 @@ void Game::fireEnhance(Bullet::BulletTrajectory trajectory, int bulletCount) {
                     bullet.setSpeedX(0);
                     bullet.setSpeedY(-10);
                     bullet.setY(playerY-25);
-                    currentTrajectory = trajectory;
                     break;
 
                 case Bullet::BulletTrajectory::Weapon3:
@@ -335,35 +370,31 @@ void Game::fireEnhance(Bullet::BulletTrajectory trajectory, int bulletCount) {
                     bullet.setY(playerY-25);
                     bullet.setSpeedX(0);
                     bullet.setSpeedY(-10);
-                    currentTrajectory = trajectory;
                     break;
 
                 case Bullet::BulletTrajectory::Weapon4:
                 {
                     angleIncrement = 24.0 / (bulletCount - 1);
                     float angle1 = -12 + bulletsFired * angleIncrement;
-                    bullet.setX(playerX+16);
+                    bullet.setX(playerX+10);
                     bullet.setY(playerY-25);
                     bullet.setSpeedX(10 * cos((angle1 - 90) * M_PI / 180.0));
                     bullet.setSpeedY(10 * sin((angle1 - 90) * M_PI / 180.0));
-                    currentTrajectory = trajectory;
                     break;
                 }
 
                 case Bullet::BulletTrajectory::Weapon5:
                 {
-                    angleIncrement = 36.0 / (bulletCount - 1);
-                    float angle2 = -18 + bulletsFired * angleIncrement;
-                    bullet.setX(playerX+16);
+                    angleIncrement = 40.0 / (bulletCount - 1);
+                    float angle2 = -20.0 + bulletsFired * angleIncrement;
+                    bullet.setX(playerX-25);
                     bullet.setY(playerY-25);
                     bullet.setSpeedX(10 * cos((angle2 - 90) * M_PI / 180.0));
                     bullet.setSpeedY(10 * sin((angle2 - 90) * M_PI / 180.0));
-                    currentTrajectory = trajectory;
                     break;
                 }
 
                 default:
-                
                     break;
             }
 
@@ -388,8 +419,6 @@ void Game::update() {
     for (Bullet &bullet : bullets) {
         if (bullet.getState() == Bullet::BulletState::Active) {
             bullet.update();
-            //std::cout << "logic:bullet position (x, y): (" << bullet.getX() << ", " << bullet.getY() << ")\n";
-
             // 检查子弹是否超出窗口边界
             if (bullet.getY() < 0) {
             bullet.setState(Bullet::BulletState::Inactive);
@@ -397,12 +426,12 @@ void Game::update() {
         }
     }
     if (autoFire) {
-    // Add your auto-fire logic here, for example:
-    if (getMyTimer() - lastFireTime > fireInterval) {
-        fireBullet(currentTrajectory);
-        lastFireTime = getMyTimer();
+        // Add your auto-fire logic here, for example:
+        if (getMyTimer() - lastFireTime > fireInterval) {
+            fireBullet(currentTrajectory); // 使用fireEnhance替换fireBullet
+            lastFireTime = getMyTimer();
+        }
     }
-}
 
     uint32_t currentTime = getMyTimer();
     
@@ -443,17 +472,20 @@ void Game::update() {
     // 生成一个补给
     if (currentTime - lastDropSpawnTime >= dropSpawnInterval) {
         int randomX = rand() % 512;
-        int randomType = rand() % 2;
+        int randomType = rand() % 3;
         Drop::DropType dropType = static_cast<Drop::DropType>(randomType);
         drops.emplace_back(randomX, 0, 5, dropType);
         lastDropSpawnTime = currentTime;
     }
-
-    // 更新补给状态
-    for (auto& drop : drops) {
+    //update drops
+    for (Drop& drop : drops) {
         drop.update();
     }
 
+    // Remove inactive drops
+    drops.erase(std::remove_if(drops.begin(), drops.end(),
+                            [](const Drop& drop) { return !drop.isActive(); }),
+                drops.end());
     checkCollisions(); // 在update()函数中添加碰撞检测
 
     

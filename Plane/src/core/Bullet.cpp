@@ -1,3 +1,7 @@
+/**
+ * @file Bullet.cpp
+ * @brief Fichier de code source pour la classe Bullet
+ */
 #include "Bullet.h"
 
 
