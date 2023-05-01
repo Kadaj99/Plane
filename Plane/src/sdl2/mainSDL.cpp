@@ -149,9 +149,6 @@ void sdlGame::cleanUpSDL() {
     SDL_DestroyTexture(controlsTexture);
     SDL_DestroyTexture(levelTexture);
     SDL_DestroyTexture(storeTexture);
-    SDL_DestroyTexture(normalTexture);
-    SDL_DestroyTexture(easyTexture);
-    SDL_DestroyTexture(hardTexture);
     SDL_DestroyTexture(dropTexture1);
     SDL_DestroyTexture(dropTexture2);
     SDL_DestroyTexture(dropTexture3);
@@ -387,7 +384,6 @@ void sdlGame::handleGameOverEvents(SDL_Event &event, Uint32 gameTime) {
                 game.save();
                 game.recordGame(game.getPlayerScore(), gameTime / 1000.0f);
                 game.setCurrentState(Game::GameState::MainMenu);   
-                game.setPlayerScore(0);
                 break;
             case SDLK_RETURN:
                 game.save();
@@ -704,18 +700,21 @@ void sdlGame::renderLevelMenu(){
 
 
 // 渲染 "Easy" 菜单项
-    easyTexture = renderText("Easy", menuFont, game.levelMenuSelection == 0 ? whiteColor : blackColor);
-    renderTexture(easyTexture, renderer, positionX, positionY / 4);
     
+    
+    SDL_Texture *easyTexture = renderText("Easy", menuFont, game.levelMenuSelection == 0 ? whiteColor : blackColor);
+    renderTexture(easyTexture, renderer, positionX, positionY / 4); 
+    SDL_DestroyTexture(easyTexture);
 
     // 渲染 "Normal" 菜单项
-    normalTexture = renderText("Normal", menuFont, game.levelMenuSelection == 1 ? whiteColor : blackColor);
+    SDL_Texture *normalTexture = renderText("Normal", menuFont, game.levelMenuSelection == 1 ? whiteColor : blackColor);
     renderTexture(normalTexture, renderer, positionX, positionY / 2);
-    
+    SDL_DestroyTexture(normalTexture);
 
     // 渲染 "Hard" 菜单项
-    hardTexture = renderText("Hard", menuFont, game.levelMenuSelection == 2 ? whiteColor : blackColor);
+    SDL_Texture *hardTexture = renderText("Hard", menuFont, game.levelMenuSelection == 2 ? whiteColor : blackColor);
     renderTexture(hardTexture, renderer, positionX, 3 * positionY / 4);
+    SDL_DestroyTexture(hardTexture);
 
 };
 
@@ -770,7 +769,10 @@ void sdlGame::renderStore() {
     int titleY = windowHeight / 4 - titleHeight / 2;
     renderTexture(storeTitleText, renderer, titleX, titleY);
     SDL_DestroyTexture(storeTitleText);  // 添加此行以销毁纹理
-    std::vector<std::string> weaponNames = {"Weapon Level 2", "Weapon Level 3", "Weapon Level 4", "Weapon Level 5"};
+    std::vector<std::string> weaponNames = {"Primary        50pt", 
+                                            "Medium        100pt", 
+                                            "Advanced      150pt", 
+                                            "Ultimate      200pt"};
 
     int menuItemX = windowWidth / 2;
     int menuItemY = windowHeight / 2;
@@ -786,7 +788,7 @@ void sdlGame::renderStore() {
         renderTexture(menuItemText, renderer, menuItemX - itemWidth / 2, itemY);
         SDL_DestroyTexture(menuItemText);  // 添加此行以销毁纹理
     }
-    std::string scoreText = "Score: " + std::to_string(game.getScoreManager().getPlayerScore());
+    std::string scoreText = "Score: " + std::to_string(game.getPlayerScore());
     SDL_Texture* scoreTexture = renderText(scoreText, menuFont, whiteColor);
     int scoreWidth, scoreHeight;
     SDL_QueryTexture(scoreTexture, nullptr, nullptr, &scoreWidth, &scoreHeight);

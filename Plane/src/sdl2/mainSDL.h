@@ -226,9 +226,7 @@ private:
     SDL_Texture *controlsTexture;
     SDL_Texture *levelTexture;
     SDL_Texture *storeTexture;
-    SDL_Texture *easyTexture;
-    SDL_Texture *normalTexture;
-    SDL_Texture *hardTexture;
+
     SDL_Texture *keyboardTexture;
     SDL_Texture *mouseTexture;
 

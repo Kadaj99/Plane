@@ -43,7 +43,7 @@ void ScoreManager::loadScore() {
 }
 
 void ScoreManager::saveScore() {
-    std::ofstream scoreFile("src/txt/scores.txt");
+    std::ofstream scoreFile("src/txt/records.txt");
 
     if (!scoreFile) {
         std::cerr << "Error opening scores.txt for writing" << std::endl;
@@ -61,7 +61,7 @@ void ScoreManager::saveScore() {
 }
 
 void ScoreManager::recordGame(int score, float gameTime) {
-    std::ofstream recordFile("/src/txt/records.txt", std::ios::app);
+    std::ofstream recordFile("src/txt/records.txt", std::ios::app);
 
     if (!recordFile) {
         std::cerr << "Error opening records.txt for writing" << std::endl;
